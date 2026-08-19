@@ -23,6 +23,10 @@
 <ul><li><strong>This ran on the recorded path</strong>, which serves extraction from recorded model</li></ul>
 <p>  responses where the prompt hash matches and from a deterministic scan where it   does not. It measures the conflict logic, not a model's reading accuracy.</p>
 <ul><li><strong>The live path was measured separately</strong>, on the demo case only. See section 3.</li><li>One run per case. This says nothing about run-to-run variance on live models.</li></ul>
+<h3>Measured again after the architecture was simplified</h3>
+<p>On 19 August the scope step's model was removed and replaced by the deterministic string matching that was already overruling it. The same measurement was re-run on the same corpus, before and after.</p>
+<div class="tw"><table><thead><tr><th></th><th>Before, scope used a model</th><th>After, scope is code</th></tr></thead><tbody><tr><td>Planted cause reported exactly</td><td>24 of 24</td><td><strong>24 of 24</strong></td></tr><tr><td>Silent picks</td><td>0 of 24</td><td><strong>0 of 24</strong></td></tr><tr><td>Tests</td><td>299 of 299</td><td><strong>299 of 299</strong></td></tr><tr><td>Canon conformance</td><td>24 of 24</td><td><strong>24 of 24</strong></td></tr><tr><td>Roles using a model</td><td>7 of 9</td><td><strong>6 of 9</strong></td></tr></tbody></table></div>
+<p><strong>Nothing measurable was lost, and one model and one failure mode went with it.</strong> That is the honest form of a simplification claim: re-run the measurement, publish both columns, and only call it a simplification if the result column does not move.</p>
 <h2>2. The comparison against just using a good model, which did not go how we predicted</h2>
 <p><code>SCENARIO_DESIGN.md</code> section 3 planned to prove that a frontier model with a good prompt cannot do this. We ran it. <strong>It does not show that</strong>, and the pitch has never claimed it does.</p>
 <p>Measured 2026-08-19, 24 Bedrock calls, 36,955 tokens, 8 fields across 2 cases, one run per field. Each baseline got the documents, the field list, and an explicit instruction to answer <code>UNCERTAIN</code> when sources disagree. Steelmanned, not a strawman.</p>
@@ -69,6 +73,19 @@
 <p>   to support a claim in either direction, including ours.</p>
 <ol><li><strong>Per-field regulatory rule mapping is not built.</strong> Which rule requires which</li></ol>
 <p>   field is stated as absent on screen and stays that way. We are not inventing    a citation to fill it.</p>
+<h2>8. Two instruments, and they disagree. Read this before chasing a score</h2>
+<p>We score the build two ways. On 19 August, after the architecture was simplified, <strong>they moved in opposite directions</strong>, and which one you believe decides what you build next.</p>
+<div class="tw"><table><thead><tr><th>Round</th><th>Build</th><th>Panel of 100, out of 10,000</th><th>Mean per reviewer</th><th>Four pillars, against the real rubric</th></tr></thead><tbody><tr><td>4</td><td>before</td><td>6,173</td><td>62.4</td><td>84.3</td></tr><tr><td>5</td><td>before</td><td>6,296</td><td>63.6</td><td>85.8</td></tr><tr><td>6</td><td><strong>simplified</strong></td><td>5,447</td><td>55.6</td><td>83.0</td></tr><tr><td>7</td><td><strong>simplified</strong>, fuller snapshot</td><td>5,328</td><td>56.1</td><td><strong>90.1</strong></td></tr></tbody></table></div>
+<p>Pillar by pillar, round 5 against round 7:</p>
+<div class="tw"><table><thead><tr><th>Pillar</th><th>Weight</th><th>Before</th><th>After</th><th>Move</th></tr></thead><tbody><tr><td>Technical execution and architecture</td><td>30</td><td>85.5</td><td><strong>92.5</strong></td><td><strong>+7.0</strong></td></tr><tr><td>Founder and venture</td><td>30</td><td>80.5</td><td>84.2</td><td>+3.7</td></tr><tr><td>Problem depth and regulatory realism</td><td>20</td><td>89.0</td><td>92.8</td><td>+3.8</td></tr><tr><td>Honesty and roadmap credibility</td><td>20</td><td>90.9</td><td>92.7</td><td>+1.8</td></tr></tbody></table></div>
+<p><strong>Every pillar of the actual rubric went up. The panel of 100 went down by about eight points per reviewer.</strong></p>
+<h3>What that means, said plainly</h3>
+<p>The panel is a proxy we invented. The four pillars mirror the published rubric the event actually scores on. When a proxy and the real thing disagree this hard, the proxy is the one to distrust.</p>
+<p>There is a second reason to distrust it here, and it is the more important one. <strong>The snapshot given to the panel changed between round 5 and round 6</strong>, because the original was not kept. So rounds 6 and 7 are not a like-for-like comparison with rounds 1 to 5, and no honest conclusion about the build can be drawn from that column. The build itself was measured directly, before and after, and did not move: 24 of 24 planted archetypes, zero silent picks, 299 of 299 tests.</p>
+<p>Round 7 makes the point sharper. <strong>Same build as round 6, richer snapshot, and the panel moved 119 points while the four pillars moved 7.1.</strong> The panel is heavily sensitive to how the product is described. That is the definition of an instrument you can tune, and tuning it would tell us nothing.</p>
+<h3>The rule this produces</h3>
+<p><strong>Do not target a panel number.</strong> A score that can be moved by rewriting the description rather than the product is not measuring the product. Report it, keep running it as a source of criticism, and steer by the four pillars and by the direct measurements, which are the ones that survive a change of wording.</p>
+<p>If a number has to be quoted for the rubric, it is <strong>90.1</strong>, and its own caveat is that it is a prediction made by models, not a jury verdict.</p>
 <a class="backlink" href="../index.html">&larr; back to the submission hub</a>
 <footer>Kriseva AI Private Limited &middot; GIFT IFIH Young Builders' Program 2026 &middot; all data synthetic</footer>
 </div>

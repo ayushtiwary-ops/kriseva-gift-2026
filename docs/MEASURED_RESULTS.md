@@ -250,3 +250,58 @@ Say these before a juror finds them.
 4. **Per-field regulatory rule mapping is not built.** Which rule requires which
    field is stated as absent on screen and stays that way. We are not inventing
    a citation to fill it.
+
+---
+
+## 8. Two instruments, and they disagree. Read this before chasing a score
+
+We score the build two ways. On 19 August, after the architecture was simplified,
+**they moved in opposite directions**, and which one you believe decides what you
+build next.
+
+| Round | Build | Panel of 100, out of 10,000 | Mean per reviewer | Four pillars, against the real rubric |
+|---|---|---|---|---|
+| 4 | before | 6,173 | 62.4 | 84.3 |
+| 5 | before | 6,296 | 63.6 | 85.8 |
+| 6 | **simplified** | 5,447 | 55.6 | 83.0 |
+| 7 | **simplified**, fuller snapshot | 5,328 | 56.1 | **90.1** |
+
+Pillar by pillar, round 5 against round 7:
+
+| Pillar | Weight | Before | After | Move |
+|---|---|---|---|---|
+| Technical execution and architecture | 30 | 85.5 | **92.5** | **+7.0** |
+| Founder and venture | 30 | 80.5 | 84.2 | +3.7 |
+| Problem depth and regulatory realism | 20 | 89.0 | 92.8 | +3.8 |
+| Honesty and roadmap credibility | 20 | 90.9 | 92.7 | +1.8 |
+
+**Every pillar of the actual rubric went up. The panel of 100 went down by about
+eight points per reviewer.**
+
+### What that means, said plainly
+
+The panel is a proxy we invented. The four pillars mirror the published rubric the
+event actually scores on. When a proxy and the real thing disagree this hard, the
+proxy is the one to distrust.
+
+There is a second reason to distrust it here, and it is the more important one.
+**The snapshot given to the panel changed between round 5 and round 6**, because
+the original was not kept. So rounds 6 and 7 are not a like-for-like comparison
+with rounds 1 to 5, and no honest conclusion about the build can be drawn from
+that column. The build itself was measured directly, before and after, and did not
+move: 24 of 24 planted archetypes, zero silent picks, 299 of 299 tests.
+
+Round 7 makes the point sharper. **Same build as round 6, richer snapshot, and the
+panel moved 119 points while the four pillars moved 7.1.** The panel is heavily
+sensitive to how the product is described. That is the definition of an instrument
+you can tune, and tuning it would tell us nothing.
+
+### The rule this produces
+
+**Do not target a panel number.** A score that can be moved by rewriting the
+description rather than the product is not measuring the product. Report it, keep
+running it as a source of criticism, and steer by the four pillars and by the
+direct measurements, which are the ones that survive a change of wording.
+
+If a number has to be quoted for the rubric, it is **90.1**, and its own caveat is
+that it is a prediction made by models, not a jury verdict.

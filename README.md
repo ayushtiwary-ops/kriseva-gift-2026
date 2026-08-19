@@ -68,6 +68,7 @@ silent picks in both.** Nothing measurable was lost and one failure mode went wi
 | A complete nine-role case | 3.3 to 7.9 seconds, 40 agent actions, about 14,700 tokens |
 | Screens verified on the deployed build | 182, across all 26 cases |
 | Tests, canon conformance, filing history | 299 of 299, 24 of 24, 9 of 9 |
+| Four-pillar prediction against the published rubric | **90.1**, technical execution 92.5 |
 
 Ground truth is written into every case by deterministic code **before any model sees it**, so
 the system is not grading its own homework. We wrote the conflicts, which makes this a

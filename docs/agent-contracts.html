@@ -11,8 +11,9 @@
 <p>The mechanical consequence for Friday: <strong>write the validator and the prompt in the same sitting, and paste the validator's own example into the prompt.</strong> If they are written apart, they drift, and nothing catches it until a live run.</p>
 <h2>1. Model routing, and why each role sits where it does</h2>
 <p>Verified live 2026-08-19 on the account recorded in <code>AWS_EVIDENCE.md</code>, region us-east-1. All fifteen Anthropic models on this account are agreement-blocked. Do not plan around them.</p>
-<div class="tw"><table><thead><tr><th>Role</th><th>Model</th><th>Fallback</th><th>Model in the loop</th></tr></thead><tbody><tr><td>orchestrator</td><td>moonshot.kimi-k2-thinking</td><td>zai.glm-5</td><td>No. The plan is deterministic in the shipped build</td></tr><tr><td>triage</td><td>amazon.nova-micro-v1:0</td><td>amazon.nova-lite-v1:0</td><td>Yes</td></tr><tr><td>extractor</td><td>amazon.nova-lite-v1:0</td><td>amazon.nova-micro-v1:0</td><td>Yes</td></tr><tr><td>binder</td><td>none</td><td>none</td><td><strong>No, by design</strong></td></tr><tr><td>validator</td><td>none</td><td>none</td><td><strong>No, by design</strong></td></tr><tr><td>critic</td><td>mistral.mistral-large-3-675b-instruct</td><td>qwen.qwen3-vl-235b-a22b</td><td>Yes</td></tr><tr><td>reconciler</td><td>zai.glm-5</td><td>deepseek.v3.2</td><td>Yes</td></tr><tr><td>narrator</td><td>amazon.nova-lite-v1:0</td><td>amazon.nova-micro-v1:0</td><td>Yes</td></tr><tr><td>learner</td><td>moonshot.kimi-k2-thinking</td><td>zai.glm-5</td><td><strong>No. Forced to the deterministic path</strong></td></tr></tbody></table></div>
-<p>Four of these entries are load bearing and a rebuild that gets them wrong looks identical until it is examined on stage.</p>
+<div class="tw"><table><thead><tr><th>Role</th><th>Model</th><th>Fallback</th><th>Model in the loop</th></tr></thead><tbody><tr><td>orchestrator</td><td>moonshot.kimi-k2-thinking</td><td>zai.glm-5</td><td>No. The plan is deterministic in the shipped build</td></tr><tr><td>scope (triage)</td><td>none</td><td>none</td><td><strong>No, since 19 Aug</strong></td></tr><tr><td>extractor</td><td>amazon.nova-lite-v1:0</td><td>amazon.nova-micro-v1:0</td><td>Yes</td></tr><tr><td>binder</td><td>none</td><td>none</td><td><strong>No, by design</strong></td></tr><tr><td>validator</td><td>none</td><td>none</td><td><strong>No, by design</strong></td></tr><tr><td>critic</td><td>mistral.mistral-large-3-675b-instruct</td><td>qwen.qwen3-vl-235b-a22b</td><td>Yes</td></tr><tr><td>reconciler</td><td>zai.glm-5</td><td>deepseek.v3.2</td><td>Yes</td></tr><tr><td>narrator</td><td>amazon.nova-lite-v1:0</td><td>amazon.nova-micro-v1:0</td><td>Yes</td></tr><tr><td>learner</td><td>moonshot.kimi-k2-thinking</td><td>zai.glm-5</td><td><strong>No. Forced to the deterministic path</strong></td></tr></tbody></table></div>
+<p>Five of these entries are load bearing and a rebuild that gets them wrong looks identical until it is examined on stage.</p>
+<p><strong>Scope must not use a model.</strong> It did until 19 August, and it committed the one failure this product exists to prevent: it read a document and returned two fields, silently dropping a third that was plainly on the page. The guard against that was a deterministic floor of plain string matching, added underneath it. The floor then overruled the model every time they disagreed, which means the model could only ever lose evidence and never save work the floor was not already saving. So the floor became the whole step. <strong>Rebuild it as string matching over the field labels and do not put a model back.</strong></p>
 <p><strong>The extractor must not sit on Nova Pro.</strong> It is the highest-volume role and the only one that carries a whole document on every call. Nova Pro measured clean at six concurrent on a twelve-token probe and still throttled at three in the real run, because its binding constraint is tokens per minute, not requests. A throttled extractor returns nothing, which is worse than a weaker model returning something: the deterministic binder checks every quote against the document and drops what it cannot find, so the architecture already catches a poor reader. It cannot catch silence.</p>
 <p><strong>The critic must not share a model family with the extractor.</strong> The old fallback pointed the critic at the same model the extractor used, so any run that fell back had the proposer and its own critic being the same model, quietly voiding the independence the product claims on stage. Enforce it in code, not in review:</p>
 <pre><code>assertCriticIndependence(config):
@@ -26,51 +27,17 @@
 <p><strong>The learner is deterministic on purpose.</strong> It passes <code>forceRecorded: true</code>, so its one-line prompt is never sent anywhere. Do not "fix" it into a model call. The lesson ledger is an accountability record, and a model-written lesson is a model marking its own homework.</p>
 <h2>2. The five live prompts, captured from the running build</h2>
 <p>Captured by executing each prompt builder against <code>CASE-2026-Q1-MER001</code>, so the document text inside them is the real synthetic corpus text a model receives. The figures in it are the CANON section 5 values. <code>USD 24,700,000</code> is undrawn commitment, which is committed capital minus drawn capital on that document, and it is the identity the deterministic validator checks.</p>
-<h3>Prompt: triage</h3>
-<pre><code>You are triaging one synthetic source document for a regulatory return.
-
-Document id: D1
-Document title: Quarterly Administrator Statement
-
-The four reportable fields, by code and label:
-  F1 = Committed capital
-  F2 = Drawn capital
-  F3 = Closing NAV
-  F4 = Complaints closed
-
-Decide which of those fields this document actually carries a figure for.
-Include a field code only if the document names that field and gives a number for it.
-Do not guess, and do not include a field the document is silent about.
-
-Return exactly this JSON object and nothing else:
-  {&quot;docId&quot;: &quot;D1&quot;, &quot;fieldCodes&quot;: [&quot;F1&quot;, &quot;F2&quot;]}
-
-docId must be exactly the document id above. fieldCodes is an array of the codes you chose,
-and it may be empty if the document carries none of them.
-
-The document text follows between the markers.
---- BEGIN DOCUMENT ---
-Northwind Fund Services (IFSC) Private Limited
-Quarterly Administrator Statement
-Scheme: Meridian Alpha Opportunities Fund I
-Period: Quarter ended 30 June 2026
-As at: 30 June 2026 16:00 IST
-Version: 2 (supersedes Version 1 issued 03 July 2026)
-Issued: 08 July 2026
-==================================================================
-SYNTHETIC TEST DOCUMENT, NOT A REAL RECORD
-
-Committed capital ................. USD 42,500,000
-Drawn capital ..................... USD 17,800,000
-Closing NAV ....................... USD 21,940,500
-Undrawn commitment ................ USD 24,700,000
-Management fee accrued ............ USD 212,000
-Distributions to date ............. USD 0
-Number of investors ............... 3
-
-Prepared by the administrator. Figures are stated as at the time above.
-
---- END DOCUMENT ---</code></pre>
+<h3>Scope: no prompt, because there is no model</h3>
+<p>Scope was a model call until 19 August. It is now this, and nothing else:</p>
+<pre><code>scopeDocument(document, fields):
+    return {
+      docId:      document.docId,
+      fieldCodes: [ field.fieldCode
+                    for field in fields
+                    if document.text.toLowerCase()
+                       contains field.label.toLowerCase() ]
+    }</code></pre>
+<p>That is the entire step. It replaced a model, a prompt, a validator and a correction path, and the measured result did not move: 24 of 24 planted archetypes still named exactly, still zero silent picks.</p>
 <h3>Prompt: extractor</h3>
 <pre><code>You are extracting one field from a source document for a regulatory audit tool.
 Field label: Committed capital
@@ -224,14 +191,13 @@ No other keys are permitted.</code></pre>
 <p>Every string at every depth is then tested against <code>/\bfile(?:d|s)?\b|\bfiling\b|\bapproved\b|\bapproval\b|\bautonomous\b|\bresolved\b|\bresolution\b/i</code> and rejected on a match. The software prepares and escalates; a named human decides. A summary that says the return was filed is discarded even if it is otherwise perfect.</p>
 <h3>Extractor</h3>
 <p>Requires <code>fieldCode</code>, <code>docId</code>, <code>candidates</code>, <code>dropped</code>. All four keys every time, including the empty <code>dropped</code> array. This is the one whose original example omitted two of its own required keys, so a model that followed the instruction exactly was rejected on every attempt.</p>
-<h3>Triage, plus the floor that overrides it</h3>
+<h3>Scope, which is now the floor and nothing else</h3>
 <p>Requires <code>{docId, fieldCodes}</code> where <code>fieldCodes</code> may be empty.</p>
-<p>Then the rule that matters more than the model's answer:</p>
-<blockquote><strong>Triage may narrow the work. It may never lose evidence.</strong></blockquote>
-<p>Plain string matching runs across the document for every field label independently of the model. Anything it finds is added back to whatever triage returned. The model can only narrow work that deterministic code agrees is absent. When the floor overrules the model, the run says so in words on screen:</p>
-<blockquote>Deterministic check restored F3 on D1. The document names those fields and the triage model omitted them. Triage may narrow the work, never lose evidence.</blockquote>
-<p>This was not a theoretical guard. With a working prompt, triage read the administrator statement and returned F1 and F2, silently dropping F3, although the document plainly contains <code>Closing NAV ....................... USD 21,940,500</code>. A pruning step that can quietly drop a field is the exact failure this product exists to prevent, and it is worse than an extraction error, because there is no candidate to check and no disagreement to preserve, so nothing downstream can detect it. On the demo case the floor fires twice, restoring F3 on D1 and F1 on D4.</p>
-<p><strong>The correction has to be visible.</strong> A correction nobody can see is indistinguishable from the model having been right.</p>
+<blockquote><strong>Scope may narrow the work. It may never lose evidence.</strong></blockquote>
+<p>Plain string matching runs across the document for every field label. That is the whole rule, and it is now the whole step.</p>
+<p>It began as a model with the string matching added underneath it as a floor, after the model read the administrator statement and returned F1 and F2, silently dropping F3, although the document plainly contains <code>Closing NAV ....................... USD 21,940,500</code>. A pruning step that can quietly drop a field is worse than an extraction error, because there is no candidate to check and no disagreement to preserve, so nothing downstream can detect it.</p>
+<p><strong>Then the floor made the model redundant.</strong> The floor overruled it every time the two disagreed, which means the model could never narrow anything the floor did not already agree to narrow. It could only lose evidence. It was removed on 19 August, and the measured result did not move.</p>
+<p>The general lesson, and it is the one to carry: <strong>when a deterministic guard has to overrule a model on every disagreement, the model is not adding judgement, it is adding risk. Delete it.</strong></p>
 <h3>Binder and validator, no model</h3>
 <p>The binder ignores any character offsets the model claims and locates each quote in the source text itself, dropping any candidate whose quote is not found character for character. The validator checks the accounting identity (undrawn commitment equals committed capital minus drawn capital, per document) and flags <code>EVIDENCE_UNBOUND</code> when a stored quote no longer matches its coordinates in the source. Both are ordinary code and there is no prompt to carry.</p>
 <h2>4. Transport constants, measured on this account</h2>

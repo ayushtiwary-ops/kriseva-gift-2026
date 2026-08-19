@@ -17,7 +17,8 @@ STAMP="$(date +%Y%m%d-%H%M)"
 cd "$HERE"
 
 echo "1. Rendering document pages"
-for pair in "RESIDENCY_ASK:residency-ask:What we need from the residency" \
+for pair in "ARCHITECTURE_SIMPLE:architecture-simple:The whole system in one page" \
+            "RESIDENCY_ASK:residency-ask:What we need from IFSCA and GIFT IFIH" \
             "MEASURED_RESULTS:measured-results:Measured results" \
             "AGENT_CONTRACT_PACK:agent-contracts:Agent contracts" \
             "RUNNING_COST_AND_LIMITS:cost-and-limits:What it costs to run" \
