@@ -1,0 +1,52 @@
+[
+ {"id":"01","hash":"#dashboard","scroll":300,"lines":[
+   "It is the eighteenth of July.",
+   "Priya has three days to file her fund's quarterly return."]},
+
+ {"id":"02","hash":"#evidence/F2","scroll":620,"lines":[
+   "She opens the administrator's statement. Drawn capital: seventeen point eight million.",
+   "She opens her own ledger. Nineteen point three.",
+   "Both official. Both signed. Neither is wrong."]},
+
+ {"id":"03","hash":"#evidence/F2","scroll":900,"lines":[
+   "She cannot tell an error from a timing difference.",
+   "So she emails the administrator.",
+   "The answer comes back in a reply, and that reply is now the only record of why she filed what she filed.",
+   "She signs personally."]},
+
+ {"id":"04","hash":"#history","scroll":300,"lines":[
+   "In October, Priya leaves.",
+   "Her successor opens the same fund, finds the same two numbers, and none of the reasoning.",
+   "The records must survive eight years. The reasoning survives fifteen days."]},
+
+ {"id":"05","hash":"#dashboard","scroll":900,"lines":[
+   "Every system built for this picks one.",
+   "Take the figure most documents agree on. It files seventeen point eight.",
+   "That is the wrong number, and nothing announces it."]},
+
+ {"id":"06","hash":"#evidence/F2","scroll":0,"lines":[
+   "We refuse to pick.",
+   "Every number is pinned to the exact line it came from, and the moment it was true.",
+   "Both documents are correct.",
+   "A capital call landed at five forty-two in the evening, after the administrator had closed at four."]},
+
+ {"id":"07","hash":"#decide/F4","scroll":0,"lines":[
+   "And this number appears in no document at all.",
+   "So it cannot be decided. Only attested, by a named person."]},
+
+ {"id":"08","hash":"#trace","scroll":900,"lines":[
+   "Nine roles. Forty steps.",
+   "Half of them contain no model at all, because a model cannot check a model."]},
+
+ {"id":"09","hash":"#signoff","scroll":0,"lines":[
+   "Priya decides, in writing. Rajiv confirms.",
+   "Then it seals, and one changed byte breaks the chain."]},
+
+ {"id":"10","hash":"#receipt","scroll":300,"lines":[
+   "Twenty-four out of twenty-four planted failures, caught.",
+   "Zero silent picks. A full case in under eight seconds."]},
+
+ {"id":"11","hash":"#history","scroll":700,"lines":[
+   "Every document here is fictional. We have never seen a real quarterly return.",
+   "But when Priya's successor opens that fund, she reads why."]}
+]

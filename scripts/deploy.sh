@@ -19,6 +19,7 @@ cd "$HERE"
 echo "1. Rendering document pages"
 for pair in "ARCHITECTURE_SIMPLE:architecture-simple:The whole system in one page" \
             "PRODUCT_AND_WORKFLOW:product-and-workflow:The product and workflow" \
+            "MAHEK_BUYER_BRIEF:buyer-brief:The buyer, in one read" \
             "PITCH_3MIN:pitch-3min:The 3 minute pitch" \
             "PITCH_1MIN:pitch-1min:The 1 minute pitch" \
             "RESIDENCY_ASK:residency-ask:What we need from IFSCA and GIFT IFIH" \
