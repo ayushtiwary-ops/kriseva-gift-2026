@@ -44,7 +44,7 @@ Anthropic models on this account are agreement-blocked. Do not plan around them.
 | Role | Model | Fallback | Model in the loop |
 |---|---|---|---|
 | orchestrator | moonshot.kimi-k2-thinking | zai.glm-5 | No. The plan is deterministic in the shipped build |
-| triage | amazon.nova-micro-v1:0 | amazon.nova-lite-v1:0 | Yes |
+| scope (triage) | none | none | **No, since 19 Aug** |
 | extractor | amazon.nova-lite-v1:0 | amazon.nova-micro-v1:0 | Yes |
 | binder | none | none | **No, by design** |
 | validator | none | none | **No, by design** |
@@ -53,8 +53,17 @@ Anthropic models on this account are agreement-blocked. Do not plan around them.
 | narrator | amazon.nova-lite-v1:0 | amazon.nova-micro-v1:0 | Yes |
 | learner | moonshot.kimi-k2-thinking | zai.glm-5 | **No. Forced to the deterministic path** |
 
-Four of these entries are load bearing and a rebuild that gets them wrong looks
+Five of these entries are load bearing and a rebuild that gets them wrong looks
 identical until it is examined on stage.
+
+**Scope must not use a model.** It did until 19 August, and it committed the one
+failure this product exists to prevent: it read a document and returned two
+fields, silently dropping a third that was plainly on the page. The guard against
+that was a deterministic floor of plain string matching, added underneath it. The
+floor then overruled the model every time they disagreed, which means the model
+could only ever lose evidence and never save work the floor was not already
+saving. So the floor became the whole step. **Rebuild it as string matching over
+the field labels and do not put a model back.**
 
 **The extractor must not sit on Nova Pro.** It is the highest-volume role and the
 only one that carries a whole document on every call. Nova Pro measured clean at
@@ -107,54 +116,24 @@ The figures in it are the CANON section 5 values. `USD 24,700,000` is undrawn
 commitment, which is committed capital minus drawn capital on that document, and
 it is the identity the deterministic validator checks.
 
-### Prompt: triage
+### Scope: no prompt, because there is no model
+
+Scope was a model call until 19 August. It is now this, and nothing else:
 
 ```text
-You are triaging one synthetic source document for a regulatory return.
-
-Document id: D1
-Document title: Quarterly Administrator Statement
-
-The four reportable fields, by code and label:
-  F1 = Committed capital
-  F2 = Drawn capital
-  F3 = Closing NAV
-  F4 = Complaints closed
-
-Decide which of those fields this document actually carries a figure for.
-Include a field code only if the document names that field and gives a number for it.
-Do not guess, and do not include a field the document is silent about.
-
-Return exactly this JSON object and nothing else:
-  {"docId": "D1", "fieldCodes": ["F1", "F2"]}
-
-docId must be exactly the document id above. fieldCodes is an array of the codes you chose,
-and it may be empty if the document carries none of them.
-
-The document text follows between the markers.
---- BEGIN DOCUMENT ---
-Northwind Fund Services (IFSC) Private Limited
-Quarterly Administrator Statement
-Scheme: Meridian Alpha Opportunities Fund I
-Period: Quarter ended 30 June 2026
-As at: 30 June 2026 16:00 IST
-Version: 2 (supersedes Version 1 issued 03 July 2026)
-Issued: 08 July 2026
-==================================================================
-SYNTHETIC TEST DOCUMENT, NOT A REAL RECORD
-
-Committed capital ................. USD 42,500,000
-Drawn capital ..................... USD 17,800,000
-Closing NAV ....................... USD 21,940,500
-Undrawn commitment ................ USD 24,700,000
-Management fee accrued ............ USD 212,000
-Distributions to date ............. USD 0
-Number of investors ............... 3
-
-Prepared by the administrator. Figures are stated as at the time above.
-
---- END DOCUMENT ---
+scopeDocument(document, fields):
+    return {
+      docId:      document.docId,
+      fieldCodes: [ field.fieldCode
+                    for field in fields
+                    if document.text.toLowerCase()
+                       contains field.label.toLowerCase() ]
+    }
 ```
+
+That is the entire step. It replaced a model, a prompt, a validator and a
+correction path, and the measured result did not move: 24 of 24 planted archetypes
+still named exactly, still zero silent picks.
 
 ### Prompt: extractor
 
@@ -369,33 +348,30 @@ time, including the empty `dropped` array. This is the one whose original
 example omitted two of its own required keys, so a model that followed the
 instruction exactly was rejected on every attempt.
 
-### Triage, plus the floor that overrides it
+### Scope, which is now the floor and nothing else
 
 Requires `{docId, fieldCodes}` where `fieldCodes` may be empty.
 
-Then the rule that matters more than the model's answer:
+> **Scope may narrow the work. It may never lose evidence.**
 
-> **Triage may narrow the work. It may never lose evidence.**
+Plain string matching runs across the document for every field label. That is the
+whole rule, and it is now the whole step.
 
-Plain string matching runs across the document for every field label
-independently of the model. Anything it finds is added back to whatever triage
-returned. The model can only narrow work that deterministic code agrees is
-absent. When the floor overrules the model, the run says so in words on screen:
+It began as a model with the string matching added underneath it as a floor, after
+the model read the administrator statement and returned F1 and F2, silently
+dropping F3, although the document plainly contains `Closing NAV
+....................... USD 21,940,500`. A pruning step that can quietly drop a
+field is worse than an extraction error, because there is no candidate to check
+and no disagreement to preserve, so nothing downstream can detect it.
 
-> Deterministic check restored F3 on D1. The document names those fields and the
-> triage model omitted them. Triage may narrow the work, never lose evidence.
+**Then the floor made the model redundant.** The floor overruled it every time the
+two disagreed, which means the model could never narrow anything the floor did not
+already agree to narrow. It could only lose evidence. It was removed on 19 August,
+and the measured result did not move.
 
-This was not a theoretical guard. With a working prompt, triage read the
-administrator statement and returned F1 and F2, silently dropping F3, although
-the document plainly contains `Closing NAV ....................... USD
-21,940,500`. A pruning step that can quietly drop a field is the exact failure
-this product exists to prevent, and it is worse than an extraction error,
-because there is no candidate to check and no disagreement to preserve, so
-nothing downstream can detect it. On the demo case the floor fires twice,
-restoring F3 on D1 and F1 on D4.
-
-**The correction has to be visible.** A correction nobody can see is
-indistinguishable from the model having been right.
+The general lesson, and it is the one to carry: **when a deterministic guard has
+to overrule a model on every disagreement, the model is not adding judgement, it
+is adding risk. Delete it.**
 
 ### Binder and validator, no model
 

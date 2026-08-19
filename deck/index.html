@@ -76,16 +76,20 @@ breaks the chain.</li>
 </ul></section>
 
 <section class="slide"><div class="n">Slide 6 &middot; architecture</div>
-<h2>Nine roles. Two of them contain no model</h2>
-<p>The binder locates every quote in the source itself and ignores whatever the model claimed. The
-validator checks the accounting identities. Both are ordinary code.</p>
-<p><strong>A model cannot verify a model.</strong> The critic and the extractor are forced onto
-independent model families, checked when the system starts, so a model criticising its own reading is a
-startup failure rather than a quiet one.</p>
+<h2>Read it. Check it. Refuse to guess.</h2>
+<p>Six steps. <strong>Three use a model. Three are plain code, and the plain code ones are the ones
+that check.</strong></p>
+<p><strong>Scope</strong> finds which documents mention which fields, by matching text. <strong>Extract</strong>
+reads the numbers and quotes the line. <strong>Bind</strong> goes and checks that quote is really there.
+<strong>Validate</strong> checks the arithmetic ties. <strong>Criticise</strong> puts a second model, from a
+different company, against the first. <strong>Reconcile</strong> describes the disagreement and is forbidden
+from choosing. Then a named person decides.</p>
+<p><strong>A model cannot check a model.</strong> The reader and the critic are forced onto different
+companies, and the system refuses to start if they are not.</p>
 <div class="kv">
-<div><div class="k">40</div><div class="v">agent actions per case</div></div>
-<div><div class="k">5</div><div class="v">models, across four companies</div></div>
-<div><div class="k">14,700</div><div class="v">tokens, recorded per action</div></div>
+<div><div class="k">6</div><div class="v">steps, end to end</div></div>
+<div><div class="k">3</div><div class="v">of them contain no model</div></div>
+<div><div class="k">1</div><div class="v">named person who signs</div></div>
 </div></section>
 
 <section class="slide"><div class="n">Slide 7 &middot; measured</div>
@@ -121,17 +125,20 @@ tests. All nine are published.</li>
 </ul></section>
 
 <section class="slide"><div class="n">Slide 10 &middot; the ask</div>
-<h2>Four things, none of them money</h2>
+<h2>Six things. Five of them are not money</h2>
 <div class="kv">
 <div><div class="k">12</div><div class="v">introductions to entities, of 217</div></div>
 <div><div class="k">20</div><div class="v">quarter-sets of real redacted documents</div></div>
 <div><div class="k">20 hrs</div><div class="v">with the officers who sign</div></div>
 <div><div class="k">2 hrs</div><div class="v">with supervision, on the rule mapping</div></div>
+<div><div class="k">18</div><div class="v">people across 8 roles, to sit near</div></div>
+<div><div class="k">$2,500</div><div class="v">AWS credits, estimated, itemised</div></div>
 </div>
 <p style="margin-top:26px">We got this far with no access, no data and no customers.
 <strong>Everything still missing is something only access can fix.</strong></p>
 <p style="font-size:15px;color:var(--ink-3)">By 30 October: a published base-rate study, extraction
-accuracy measured on real formats, the rule mapping shipped, and two signed pilots.</p></section>
+accuracy measured on real formats, the rule mapping shipped, two signed pilots, and a written answer
+on whether there is a second problem here worth building.</p></section>
 
 </div>
 <footer><div class="deck">Kriseva AI Private Limited &middot; all data synthetic &middot; no customer,

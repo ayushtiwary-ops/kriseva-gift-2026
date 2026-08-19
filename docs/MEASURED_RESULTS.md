@@ -62,6 +62,24 @@ class of mistake as the eval label file in section 5.
 - **The live path was measured separately**, on the demo case only. See section 3.
 - One run per case. This says nothing about run-to-run variance on live models.
 
+### Measured again after the architecture was simplified
+
+On 19 August the scope step's model was removed and replaced by the deterministic
+string matching that was already overruling it. The same measurement was re-run on
+the same corpus, before and after.
+
+| | Before, scope used a model | After, scope is code |
+|---|---|---|
+| Planted cause reported exactly | 24 of 24 | **24 of 24** |
+| Silent picks | 0 of 24 | **0 of 24** |
+| Tests | 299 of 299 | **299 of 299** |
+| Canon conformance | 24 of 24 | **24 of 24** |
+| Roles using a model | 7 of 9 | **6 of 9** |
+
+**Nothing measurable was lost, and one model and one failure mode went with it.**
+That is the honest form of a simplification claim: re-run the measurement, publish
+both columns, and only call it a simplification if the result column does not move.
+
 ---
 
 ## 2. The comparison against just using a good model, which did not go how we predicted

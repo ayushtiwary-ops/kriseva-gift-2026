@@ -53,23 +53,32 @@ separated them, and it was evidence localisation. We are showing that table rath
 hoped for. <a href="docs/measured-results.html">See section 2</a>.</div>
 
 <h2>How it works</h2>
+<p style="font-size:20px"><strong>Read it. Check it. Refuse to guess.</strong></p>
+<p>Six steps. <strong>Three use a model. Three are plain code, and the plain code ones are the ones
+that check.</strong> A model cannot check a model.</p>
 <div class="tw"><table>
-<thead><tr><th>Role</th><th>What it does</th><th>Model</th></tr></thead>
+<thead><tr><th>Stage</th><th>Step</th><th>What it does</th><th>Model?</th></tr></thead>
 <tbody>
-<tr><td>Orchestrator</td><td>Writes the plan and holds one deadline for the whole run</td><td>No model. Deterministic</td></tr>
-<tr><td>Triage</td><td>Decides which documents carry which fields</td><td>Nova Micro</td></tr>
-<tr><td>Extractor</td><td>Reads candidate values and quotes them</td><td>Nova Lite</td></tr>
-<tr><td><strong>Binder</strong></td><td>Locates every quote in the source itself and drops what it cannot find</td><td><strong>No model, by design</strong></td></tr>
-<tr><td><strong>Validator</strong></td><td>Checks the accounting identities</td><td><strong>No model, by design</strong></td></tr>
-<tr><td>Critic</td><td>Attacks the reading. Forced onto an independent model family</td><td>Mistral Large 3</td></tr>
-<tr><td>Reconciler</td><td>Describes the disagreement. Forbidden from resolving it</td><td>GLM-5</td></tr>
-<tr><td>Narrator</td><td>Hands off to a named human</td><td>Nova Lite</td></tr>
-<tr><td>Learner</td><td>Records the lesson</td><td>No model. Deterministic</td></tr>
+<tr><td><strong>Read</strong></td><td>Scope</td><td>Finds which documents mention which fields, by matching the field name in the text</td><td><strong>No</strong></td></tr>
+<tr><td></td><td>Extract</td><td>A model reads every number and quotes the line it came from</td><td>Yes</td></tr>
+<tr><td><strong>Check</strong></td><td>Bind</td><td>Looks for that exact quote in the document. Not there, character for character, and the number is thrown away</td><td><strong>No</strong></td></tr>
+<tr><td></td><td>Validate</td><td>Checks the arithmetic ties. Undrawn must equal committed minus drawn</td><td><strong>No</strong></td></tr>
+<tr><td></td><td>Criticise</td><td>A second model, from a different company, tries to knock the reading down</td><td>Yes</td></tr>
+<tr><td><strong>Refuse</strong></td><td>Reconcile</td><td>Describes the disagreement and its cause. Forbidden from choosing, in code</td><td>Yes</td></tr>
+<tr><td></td><td>A person</td><td>Decides in writing, a second person signs off, the record is sealed</td><td>Human</td></tr>
 </tbody></table></div>
 
-<p><strong>Two of the nine roles contain no model at all, because a model cannot verify a model.</strong>
-The critic and the extractor are forced onto different model families, checked when the system starts
-rather than in review, so a model criticising its own reading is a startup failure and never a quiet one.</p>
+<p>The model that reads and the model that criticises are forced onto different companies, checked
+when the system starts rather than in review, so a model criticising its own reading is a startup
+failure and never a quiet one.</p>
+
+<div class="note"><strong>We removed a model on 19 August, and measured it.</strong> The scope step
+used to be a model. On a live run it read a document and returned two fields, silently dropping a
+third that was plainly on the page. We put deterministic string matching underneath it as a floor,
+then noticed the floor was overruling the model every time they disagreed, which means the model
+could only ever lose evidence. So we deleted it. Same corpus, before and after: 24 of 24 planted
+archetypes, zero silent picks, 299 tests passing. <strong>Nothing measurable was lost and one
+failure mode went with it.</strong> <a href="docs/architecture-simple.html">The whole system in one page</a>.</div>
 
 <h2>What we have not built, said before you find it</h2>
 <ul>
@@ -99,6 +108,7 @@ and built on a starter AWS account.</p>
 <li><a href="https://kriseva-gift-backup-2026.s3.us-east-1.amazonaws.com/prototype/index.html"><strong>The working prototype</strong></a>, deployed, all 26 cases, every screen</li>
 <li><a href="deck/index.html"><strong>The pitch deck</strong></a>, ten slides</li>
 <li><a href="docs/residency-ask.html"><strong>What we need from the residency</strong></a>, in exact numbers, with what each unblocks</li>
+<li><a href="docs/architecture-simple.html"><strong>The whole system in one page</strong></a>, six steps, three of them plain code</li>
 <li><a href="docs/measured-results.html"><strong>Measured results</strong></a>, every number, its method, and what it does not prove</li>
 <li><a href="docs/cost-and-limits.html">What it costs to run</a>, measured rate limits and what broke on the live path</li>
 <li><a href="docs/defect-ledger.html">The defect ledger</a>, nine defects found by using it, published in full</li>
@@ -114,9 +124,10 @@ account at <code>kriseva-gift-backup-2026</code>, and mirrored on GitHub Pages a
 If one is unreachable the other carries everything except the prototype.</div>
 
 <h2>The ask</h2>
-<p>Four things, none of them money. Twelve introductions to fund management entities, of the 217
-registered. Five entities' documents, redacted, four quarters each. Twenty hours with the officers who
-sign. Two hours with supervision on which rule requires which field.</p>
+<p>Six things, and five of them are not money. Twelve introductions to fund management entities, of the
+217 registered. Twenty quarter-sets of real redacted documents. Twenty hours with the officers who
+sign. Two hours with supervision on the rule mapping. Eighteen people across eight roles to sit near.
+And an estimated USD 2,500 of AWS credits, itemised from measured token counts.</p>
 <p><strong>Everything still missing from this product is something only access can fix.</strong>
 <a href="docs/residency-ask.html">The full ask, with dates and commitments</a>.</p>
 

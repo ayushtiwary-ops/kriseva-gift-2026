@@ -15,7 +15,8 @@ Kriseva AI Private Limited. GIFT IFIH Young Builders' Program 2026.
 | **The working prototype** | https://kriseva-gift-backup-2026.s3.us-east-1.amazonaws.com/prototype/index.html |
 | **The submission hub** | https://kriseva-gift-backup-2026.s3.us-east-1.amazonaws.com/index.html |
 | **The pitch deck** | [deck/index.html](deck/index.html) |
-| **What we need from the residency** | [docs/RESIDENCY_ASK.md](docs/RESIDENCY_ASK.md) |
+| **The whole system in one page** | [docs/ARCHITECTURE_SIMPLE.md](docs/ARCHITECTURE_SIMPLE.md) |
+| **What we need from IFSCA and GIFT IFIH** | [docs/RESIDENCY_ASK.md](docs/RESIDENCY_ASK.md) |
 | **Every measured number** | [docs/MEASURED_RESULTS.md](docs/MEASURED_RESULTS.md) |
 
 The prototype is the real product with all 26 cases and every screen. The application code
@@ -44,6 +45,19 @@ We are stating our position before anyone has to ask for it.
 An evidence-integrity company cannot win by gaming an audit.
 
 ---
+
+## How it works, in one line
+
+**Read it. Check it. Refuse to guess.** Six steps. Three use a model. Three are plain code,
+and the plain code ones are the ones that check. A model cannot check a model.
+
+On 19 August we removed a model. The scope step used to be one, and on a live run it read a
+document and returned two fields, silently dropping a third that was plainly on the page. We
+put deterministic string matching underneath it as a floor, then noticed the floor was
+overruling the model every time they disagreed, which means the model could only ever lose
+evidence. So we deleted it and re-ran the measurement. **24 of 24 before, 24 of 24 after, zero
+silent picks in both.** Nothing measurable was lost and one failure mode went with it.
+[The whole system in one page](docs/ARCHITECTURE_SIMPLE.md).
 
 ## What we measured
 
@@ -84,7 +98,8 @@ passing tests. All nine are published in [docs/DEFECT_LEDGER_2026-08-19.md](docs
 
 | Path | What it is |
 |---|---|
-| [docs/RESIDENCY_ASK.md](docs/RESIDENCY_ASK.md) | The four asks in exact numbers, what each unblocks, and what we commit to by 30 October |
+| [docs/ARCHITECTURE_SIMPLE.md](docs/ARCHITECTURE_SIMPLE.md) | The whole system in one page, and how to explain it in ten, thirty or sixty seconds |
+| [docs/RESIDENCY_ASK.md](docs/RESIDENCY_ASK.md) | Six asks in exact numbers: introductions, documents, hours, supervision, the 18 people to sit near, and the AWS credits, with what each unblocks and what we commit to by 30 October |
 | [docs/MEASURED_RESULTS.md](docs/MEASURED_RESULTS.md) | Every number, its method, its scope, and the four things it does not prove |
 | [docs/DEFECT_LEDGER_2026-08-19.md](docs/DEFECT_LEDGER_2026-08-19.md) | Nine defects found by use, and the rule each one produced |
 | [docs/AGENT_CONTRACT_PACK.md](docs/AGENT_CONTRACT_PACK.md) | The agent prompts, the validator contracts, model routing, and the rebuild order |

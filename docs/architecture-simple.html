@@ -1,0 +1,42 @@
+<title>The whole system in one page</title>
+<link rel="stylesheet" href="../styles/hub.css">
+<div class="strip">KRISEVA ATTEST &middot; synthetic data only &middot; research stage &middot; no customer or entity data</div>
+<div class="wrap"><h1>THE WHOLE SYSTEM, IN ONE PAGE</h1>
+<p>Status: STABLE. Rewritten 2026-08-19 after the architecture was simplified. This is the only architecture document to memorise. Everything else is detail.</p>
+<h2>Say this</h2>
+<blockquote><strong>"Read it. Check it. Refuse to guess."</strong></blockquote>
+<p>Three stages. Six steps. <strong>Three of the six use a model. The other three are plain code, and the plain code ones are the ones that check.</strong></p>
+<p>That last sentence is the product. A model cannot check a model.</p>
+<h2>The six steps</h2>
+<div class="tw"><table><thead><tr><th></th><th>Step</th><th>What it does</th><th>Model?</th></tr></thead><tbody><tr><td><strong>READ</strong></td><td>1. Scope</td><td>Finds which documents mention which fields, by matching the field name in the text</td><td><strong>No</strong></td></tr><tr><td></td><td>2. Extract</td><td>A model reads every number for those fields and quotes the line it came from</td><td>Yes</td></tr><tr><td><strong>CHECK</strong></td><td>3. Bind</td><td>Looks for that exact quote in the document. If it is not there, the number is thrown away</td><td><strong>No</strong></td></tr><tr><td></td><td>4. Validate</td><td>Checks the arithmetic ties. Undrawn must equal committed minus drawn</td><td><strong>No</strong></td></tr><tr><td></td><td>5. Criticise</td><td>A second model, from a different company, tries to knock the reading down</td><td>Yes</td></tr><tr><td><strong>REFUSE</strong></td><td>6. Reconcile</td><td>Where the numbers disagree, describes the disagreement and its cause. <strong>Forbidden from choosing</strong></td><td>Yes</td></tr><tr><td></td><td></td><td>Then a named person decides in writing, a second person signs off, and the record is sealed</td><td>Human</td></tr></tbody></table></div>
+<h2>How to explain each step in one sentence</h2>
+<p><strong>1. Scope.</strong> "Before we read anything, plain code looks for the field name in each document. No model. It used to be a model, and we took it out, because a model that narrows the work can quietly drop a field, and ours did."</p>
+<p><strong>2. Extract.</strong> "A model reads the numbers and has to quote the exact line."</p>
+<p><strong>3. Bind.</strong> "We go and look for that quote in the document. If it is not there, character for character, we throw the number away. That is not a model, that is string matching."</p>
+<p><strong>4. Validate.</strong> "Undrawn commitment has to equal committed minus drawn. That is arithmetic, not an opinion."</p>
+<p><strong>5. Criticise.</strong> "A second model, from a different company, tries to knock the first one's reading down. Enforced in code: if the two ever end up on the same model family, the system refuses to start."</p>
+<p><strong>6. Reconcile.</strong> "Where the documents disagree, it writes down what the disagreement is and why. It is not allowed to pick. If it tries, the guard blocks it and you see that on the screen."</p>
+<p><strong>Then a person.</strong> "A named human decides in writing, a second person signs off, and the record is sealed so an edit breaks the chain."</p>
+<h2>The three questions you will be asked, and the answers</h2>
+<p><strong>"Why is scope not a model?"</strong></p>
+<blockquote>"It was. On a live run the triage model read the administrator statement and returned two fields, silently dropping a third that was plainly on the page. Nothing downstream could catch it, because if a field is never extracted there is no candidate to check and no disagreement to preserve. We put deterministic string matching underneath it as a floor, and then we noticed the floor was overruling the model every time they disagreed. So the model could only ever lose evidence, never save work the floor was not already saving. We removed it."</blockquote>
+<p><strong>"Why do you need two models?"</strong></p>
+<blockquote>"Because a model checking its own reading is not a check. The one that reads and the one that criticises are forced onto different model families, and that is verified when the system starts, not in code review. If no independent critic is available, it refuses to run."</blockquote>
+<p><strong>"What actually stops it from just picking a number?"</strong></p>
+<blockquote>"Code, not instruction. The reconciler's output is rejected if it contains a chosen value, a resolved state, or anything that looks like a human decision, checked at every level of the object. On a live run you can watch that guard fire. It shows on the Trace screen as blocked."</blockquote>
+<h2>What changed on 19 August, and why</h2>
+<p><strong>Before:</strong> nine named roles, seven of them wired to models. <strong>Now:</strong> nine roles still exist in the record, but only <strong>six use a model</strong>, and only <strong>six matter on stage</strong>. Three of those six are plain code.</p>
+<p>The three that never mattered on stage are infrastructure, and should be called that rather than called agents:</p>
+<div class="tw"><table><thead><tr><th>Role</th><th>What it really is</th></tr></thead><tbody><tr><td>Orchestrator</td><td>The plan and the time budget. It is deterministic. Call it "the budget", not an agent</td></tr><tr><td>Narrator</td><td>One paragraph handing the case to a named person</td></tr><tr><td>Learner</td><td>The lesson ledger. Deterministic, and it must stay that way, because a model writing its own lessons is marking its own homework</td></tr></tbody></table></div>
+<p><strong>Nothing was lost by simplifying.</strong> Measured before and after, on the same corpus: 24 of 24 planted failure archetypes still named exactly, still zero silent picks, 299 of 299 tests passing, 24 of 24 canon checks. One fewer model, one fewer failure mode, and a story that fits in a breath.</p>
+<h2>If you have ten seconds</h2>
+<blockquote>"Six steps. Three use a model, three are just code, and the code ones do the checking. Where the documents disagree, it refuses to pick and hands it to a named person who signs for it."</blockquote>
+<h2>If you have thirty seconds</h2>
+<p>Add:</p>
+<blockquote>"The number has to be quoted from the document, and we go and check the quote is really there before we keep it. The model that reads and the model that criticises come from different companies, and the system will not start if they do not. And the step that describes the disagreement is forbidden from resolving it, in code, so you can watch the guard block it."</blockquote>
+<h2>If you have one minute</h2>
+<p>Add the failure that proves it:</p>
+<blockquote>"Our own scoping model dropped a field that was plainly on the page. Nothing downstream could have caught it. So we replaced it with plain string matching and took the model out. That is the whole thesis in one incident: the parts that check must not be the parts that guess."</blockquote>
+<a class="backlink" href="../index.html">&larr; back to the submission hub</a>
+<footer>Kriseva AI Private Limited &middot; GIFT IFIH Young Builders' Program 2026 &middot; all data synthetic</footer>
+</div>
