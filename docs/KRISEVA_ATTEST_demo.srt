@@ -1,0 +1,43 @@
+1
+00:00:02,400 --> 00:00:14,470
+Four numbers. Five sources. They disagree, and nothing says so.
+
+2
+00:00:14,750 --> 00:00:24,210
+The bar stops where the agreement stops.
+
+3
+00:00:24,490 --> 00:00:34,010
+The ordinary rule files the wrong number, silently.
+
+4
+00:00:34,290 --> 00:00:47,650
+Every number pinned to its exact line, and to a moment in time.
+
+5
+00:00:47,930 --> 00:00:58,200
+No source? It cannot be decided. Only attested, by name.
+
+6
+00:00:58,480 --> 00:01:08,000
+9 roles, 40 steps, 3 model companies.
+
+7
+00:01:08,280 --> 00:01:16,830
+Half the run contains no model. A model cannot check a model.
+
+8
+00:01:17,110 --> 00:01:23,130
+A named person decides. A second person signs off.
+
+9
+00:01:23,410 --> 00:01:27,630
+Sealed. Change one byte and the chain breaks.
+
+10
+00:01:27,910 --> 00:01:38,800
+24 of 24 planted failures caught. 0 silent picks.
+
+11
+00:01:39,080 --> 00:01:50,100
+All data synthetic. What is missing, only access can fix.

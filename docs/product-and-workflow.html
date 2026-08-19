@@ -1,0 +1,86 @@
+<title>The product and workflow</title>
+<link rel="stylesheet" href="../styles/hub.css">
+<div class="strip">KRISEVA ATTEST &middot; synthetic data only &middot; research stage &middot; no customer or entity data</div>
+<div class="wrap"><h1>KRISEVA ATTEST: the product, the workflow, and every role</h1>
+<p>Status: STABLE. Written 2026-08-19 from the running build. Every count in this document was produced by running a case and reading the trace, not from intent.</p>
+<p><strong>This is the document to learn.</strong> If you know only this one, you can answer almost any question a jury asks.</p>
+<h2>1. The product in four sentences</h2>
+<p>A fund in GIFT IFSC has to file four numbers to the regulator every quarter. Those numbers arrive from five different parties who close their books at different times, so they disagree, and nothing in the documents says so.</p>
+<p><strong>Every system built for this picks one number and files it. We refuse to pick.</strong></p>
+<p>We show every number pinned to the exact line it came from, name why the sources disagree, and hand the decision to a person who signs for it in writing.</p>
+<h2>2. The problem, in numbers</h2>
+<div class="tw"><table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td>Fund management entities in GIFT IFSC</td><td><strong>217</strong></td></tr><tr><td>Schemes they run between them</td><td><strong>360</strong></td></tr><tr><td>Deadline after quarter end</td><td><strong>21 calendar days</strong>, four times a year</td></tr><tr><td>Numbers on the return</td><td><strong>4</strong>: committed capital, drawn capital, closing NAV, complaints closed</td></tr><tr><td>Parties those numbers come from</td><td><strong>5</strong>: administrator, internal ledger, subscription register, custodian, valuer</td></tr><tr><td>Who signs</td><td>The Compliance Officer and the Principal Officer, <strong>personally</strong></td></tr><tr><td>Notice period when a Compliance Officer leaves</td><td><strong>15 days</strong>. Records must survive <strong>8 years</strong></td></tr></tbody></table></div>
+<p><strong>The gap:</strong> the records survive 8 years. The reasoning behind each number lives in an email thread and leaves with the person.</p>
+<h2>3. The workflow, end to end</h2>
+<pre><code>  DOCUMENTS IN                                       A FILING OUT
+       |                                                   ^
+       v                                                   |
+  +---------+   +---------+   +--------+   +----------+   +--------+
+  |  SCOPE  |--&gt;| EXTRACT |--&gt;|  BIND  |--&gt;| VALIDATE |--&gt;| CRITIC |
+  |  code   |   |  model  |   |  code  |   |   code   |   | model  |
+  +---------+   +---------+   +--------+   +----------+   +--------+
+   which docs    read the      is the       does the        try to
+   name which    numbers and   quote        arithmetic      knock the
+   fields        quote the     really       tie?            reading
+                 line          there?                       down
+                                                                |
+                                                                v
+                                                        +--------------+
+                                                        |  RECONCILE   |
+                                                        |    model     |
+                                                        | describe the |
+                                                        | disagreement |
+                                                        | CANNOT pick  |
+                                                        +--------------+
+                                                                |
+                                                                v
+   +-----------------------------------------------------------------+
+   |  A NAMED PERSON decides in writing                              |
+   |  A SECOND NAMED PERSON signs off (cannot be the first)          |
+   |  The whole trail is hash chained into a receipt that breaks     |
+   |  visibly if a single byte changes                               |
+   +-----------------------------------------------------------------+</code></pre>
+<p><strong>Say it as:</strong> <em>"Read it. Check it. Refuse to guess."</em></p>
+<h2>4. Every role, what it does, and which model</h2>
+<p>Measured on one complete case: <strong>40 agent actions, 9 roles, 4 of them using a model, 5 of them plain code.</strong></p>
+<div class="tw"><table><thead><tr><th>#</th><th>Role</th><th>Actions per case</th><th>Model</th><th>Company</th><th>What it does, in one line</th></tr></thead><tbody><tr><td>1</td><td><strong>Orchestrator</strong></td><td>2</td><td><strong>none</strong></td><td></td><td>Writes the plan and holds one wall-clock deadline for the whole run</td></tr><tr><td>2</td><td><strong>Scope</strong></td><td>4</td><td><strong>none</strong></td><td></td><td>Matches each field name against each document's text to see which documents carry which fields</td></tr><tr><td>3</td><td><strong>Extractor</strong></td><td>8</td><td><code>amazon.nova-lite-v1:0</code></td><td>Amazon</td><td>Reads every candidate number and quotes the exact line it came from</td></tr><tr><td>4</td><td><strong>Binder</strong></td><td>7</td><td><strong>none</strong></td><td></td><td>Searches the source for that quote. Not there character for character, and the number is thrown away</td></tr><tr><td>5</td><td><strong>Validator</strong></td><td>7</td><td><strong>none</strong></td><td></td><td>Checks the accounting identities. Undrawn commitment must equal committed minus drawn</td></tr><tr><td>6</td><td><strong>Critic</strong></td><td>7</td><td><code>mistral.mistral-large-3-675b-instruct</code></td><td>Mistral</td><td>Tries to knock the reading down. Forced onto a different company from the extractor</td></tr><tr><td>7</td><td><strong>Reconciler</strong></td><td>4</td><td><code>zai.glm-5</code></td><td>Z.ai</td><td>Describes the disagreement and names its cause. <strong>Forbidden in code from choosing a value</strong></td></tr><tr><td>8</td><td><strong>Narrator</strong></td><td>1</td><td><code>amazon.nova-lite-v1:0</code></td><td>Amazon</td><td>Writes the two-sentence handoff to the named person</td></tr><tr><td>9</td><td><strong>Learner</strong></td><td>on a lesson</td><td><strong>none</strong></td><td></td><td>Records what went wrong so it can become a proposed rule a human approves</td></tr></tbody></table></div>
+<p><strong>Three different models from three different companies.</strong> Amazon, Mistral and Z.ai, on Bedrock, on our own AWS account.</p>
+<h3>The five that contain no model, and why that is the point</h3>
+<p><strong>A model cannot check a model.</strong> Scope, Bind and Validate are the three steps that decide whether a number survives, and none of them contains a model. They are string matching and arithmetic. The Orchestrator's plan and the Learner's ledger are deterministic for the same reason: a model that writes its own plan and grades its own lessons is marking its own homework.</p>
+<h2>5. How they work together, in order</h2>
+<ol><li><strong>Orchestrator</strong> writes a plan: which documents, which fields, in what order,</li></ol>
+<p>   with a retry budget and a single deadline for the whole run. Deterministic.</p>
+<ol><li><strong>Scope</strong> narrows the work. For each document it checks whether the text</li></ol>
+<p>   contains each field's name. Nothing else. If it finds nothing, the document is    skipped for that field.</p>
+<ol><li><strong>Extractor</strong> is called once per document-and-field pair that survived scope.</li></ol>
+<p>   It returns candidate values, each with the exact quoted line.</p>
+<ol><li><strong>Binder</strong> takes each quote and looks for it in the source document,</li></ol>
+<p>   character for character. It computes the character offsets itself and ignores    anything the model claimed. <strong>A quote it cannot find is dropped.</strong></p>
+<ol><li><strong>Validator</strong> checks the arithmetic across the surviving candidates, per</li></ol>
+<p>   document. A mismatch is flagged, not corrected.</p>
+<ol><li><strong>Critic</strong> runs on a different company's model and is given the reading and</li></ol>
+<p>   the document, and asked to attack it. An empty objection list is a valid    answer; inventing an objection is worse than raising none.</p>
+<ol><li><strong>Reconciler</strong> looks at what survived. One distinct value is <code>SUPPORTED</code>. Two</li></ol>
+<p>   or more is <code>CONFLICTED</code>, with a named cause. None is <code>UNSUPPORTED</code>. Its output    is rejected by code if it contains a chosen value or a resolved state.</p>
+<ol><li><strong>Narrator</strong> writes the handoff, and is blocked from any wording that implies</li></ol>
+<p>   the return was filed, approved or resolved.</p>
+<ol><li><strong>A named person</strong> decides in writing. <strong>A second named person</strong>, who cannot be</li></ol>
+<p>   the first, signs off. The record is hash chained and sealed.</p>
+<p><strong>Two things run in parallel</strong> because they do not depend on each other: extraction across documents, and criticism of readings already produced. That is why 40 actions complete in three to eight seconds.</p>
+<h2>6. What is enforced in code rather than asked for politely</h2>
+<p>This list is the product. Everything else is presentation.</p>
+<div class="tw"><table><thead><tr><th>Rule</th><th>How it is enforced</th></tr></thead><tbody><tr><td>A quote that is not in the document does not count</td><td>The binder searches for it and drops the candidate. No model involved</td></tr><tr><td>The software may never choose between conflicting values</td><td>The reconciler's output is rejected if it contains a selected value or a resolved state, checked at every level of the object</td></tr><tr><td>The critic may not be the same model family as the extractor</td><td>Verified when the system starts. If no independent critic exists, <strong>it refuses to run</strong></td></tr><tr><td>Narrowing the work may never lose evidence</td><td>Scope is plain string matching. There is no model that could drop a field</td></tr><tr><td>A run may not exceed its time budget</td><td>One deadline for the whole run, every step raced against the remaining time. A step still running at the deadline escalates to a person</td></tr><tr><td>The same person may not decide and sign off</td><td>Rejected at the sign-off endpoint</td></tr><tr><td>A field with no source may be attested but never decided</td><td>Separate endpoint, separate state, shown differently on screen</td></tr></tbody></table></div>
+<h2>7. What we measured</h2>
+<div class="tw"><table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td>Planted failure archetypes named with exactly the right cause</td><td><strong>24 of 24</strong></td></tr><tr><td>Times the software chose a value by itself</td><td><strong>0 of 24</strong></td></tr><tr><td>One complete case</td><td><strong>3.3 to 7.9 seconds</strong>, 40 actions, about <strong>14,700 tokens</strong></td></tr><tr><td>Tests, canon conformance, filing history</td><td><strong>299 of 299</strong>, <strong>24 of 24</strong>, <strong>9 of 9</strong></td></tr><tr><td>Screens swept on the deployed build</td><td><strong>182</strong>, across all 26 cases, zero problems</td></tr><tr><td>Four-pillar prediction against the published rubric</td><td><strong>90.1</strong></td></tr></tbody></table></div>
+<p>Ground truth is written into every case by deterministic code <strong>before any model sees it</strong>, so the system is not grading its own homework.</p>
+<p><strong>And the honest limit:</strong> we wrote those conflicts. It is a consistency check across ten failure shapes, not an accuracy claim about real documents. We have never seen a real quarterly return.</p>
+<h2>8. How many roles were reduced, and when</h2>
+<div class="tw"><table><thead><tr><th>Date</th><th>Roles using a model</th><th>What changed</th></tr></thead><tbody><tr><td>Before 19 Aug</td><td><strong>7 of 9</strong></td><td></td></tr><tr><td>19 Aug, morning</td><td>7 of 9</td><td>Five of the seven had stub prompts and had never worked. Fixed</td></tr><tr><td>19 Aug, evening</td><td><strong>6 of 9</strong></td><td><strong>Scope's model removed.</strong> The deterministic floor underneath it was overruling it on every disagreement, so it could only lose evidence</td></tr><tr><td>19 Aug, late</td><td><strong>4 of 9</strong></td><td><strong>Orchestrator and Learner corrected to no-model.</strong> Both carried a model id they never called. The config was overstating our own model count</td></tr></tbody></table></div>
+<p><strong>From 7 to 4.</strong> Two were deleted because they added risk without adding judgement, and two were never really there and the configuration was wrong about it. Measured before and after each change: 24 of 24, zero silent picks, 299 tests passing, every time.</p>
+<blockquote>"We took models out and the numbers did not move. That is the strongest thing we can say about whether they were doing anything."</blockquote>
+<h2>9. The number the screen shows</h2>
+<p>A case takes <strong>40 steps</strong>. The Trace screen counts them and says, in its own words: <strong>20 contain no model at all.</strong></p>
+<p>Exactly half the run is plain code, and it is the half that checks. That sentence is generated from the run rather than typed, so it cannot drift away from what actually happened.</p>
+<a class="backlink" href="../index.html">&larr; back to the submission hub</a>
+<footer>Kriseva AI Private Limited &middot; GIFT IFIH Young Builders' Program 2026 &middot; all data synthetic</footer>
+</div>

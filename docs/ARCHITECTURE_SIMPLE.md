@@ -9,8 +9,12 @@ This is the only architecture document to memorise. Everything else is detail.
 
 > **"Read it. Check it. Refuse to guess."**
 
-Three stages. Six steps. **Three of the six use a model. The other three are
-plain code, and the plain code ones are the ones that check.**
+Three stages. Six steps that matter. **Three of the six use a model. The other
+three are plain code, and the plain code ones are the ones that check.**
+
+Counted across the whole run rather than the six teaching steps: **9 roles, 4 of
+which use a model, and of the 40 steps a case actually takes, exactly 20 contain
+no model at all.** The Trace screen says so itself, generated from the run.
 
 That last sentence is the product. A model cannot check a model.
 
@@ -85,18 +89,25 @@ and the record is sealed so an edit breaks the chain."
 
 ## What changed on 19 August, and why
 
-**Before:** nine named roles, seven of them wired to models.
-**Now:** nine roles still exist in the record, but only **six use a model**, and
-only **six matter on stage**. Three of those six are plain code.
+**Before:** nine named roles, **seven** of them wired to models.
+**Now:** nine roles, **four** of them wired to models, and only six worth naming
+on stage.
+
+Two rounds of reduction, both measured:
+
+| Change | Roles using a model | Why |
+|---|---|---|
+| Scope's model removed | 7 to 6 | The deterministic floor underneath it overruled it on every disagreement, so it could only lose evidence, never save work the floor was not already saving |
+| Orchestrator and Learner corrected | 6 to **4** | **Neither ever called a model.** The plan comes from deterministic code and the learner is forced onto the recorded path. The configuration had claimed models they never used, which overstated our own model count |
 
 The three that never mattered on stage are infrastructure, and should be called
 that rather than called agents:
 
-| Role | What it really is |
-|---|---|
-| Orchestrator | The plan and the time budget. It is deterministic. Call it "the budget", not an agent |
-| Narrator | One paragraph handing the case to a named person |
-| Learner | The lesson ledger. Deterministic, and it must stay that way, because a model writing its own lessons is marking its own homework |
+| Role | What it really is | Model |
+|---|---|---|
+| Orchestrator | The plan and the time budget | **None** |
+| Narrator | One paragraph handing the case to a named person | Nova Lite |
+| Learner | The lesson ledger. It must stay deterministic, because a model writing its own lessons is marking its own homework | **None** |
 
 **Nothing was lost by simplifying.** Measured before and after, on the same
 corpus: 24 of 24 planted failure archetypes still named exactly, still zero

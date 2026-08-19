@@ -15,7 +15,10 @@ Kriseva AI Private Limited. GIFT IFIH Young Builders' Program 2026.
 | **The working prototype** | https://kriseva-gift-backup-2026.s3.us-east-1.amazonaws.com/prototype/index.html |
 | **The submission hub** | https://kriseva-gift-backup-2026.s3.us-east-1.amazonaws.com/index.html |
 | **The pitch deck** | [deck/index.html](deck/index.html) |
+| **The 2 minute demo video** | https://kriseva-gift-backup-2026.s3.us-east-1.amazonaws.com/video.html |
 | **The whole system in one page** | [docs/ARCHITECTURE_SIMPLE.md](docs/ARCHITECTURE_SIMPLE.md) |
+| **The product, workflow and every role** | [docs/PRODUCT_AND_WORKFLOW.md](docs/PRODUCT_AND_WORKFLOW.md) |
+| **Pitches** | [3 minute](docs/PITCH_3MIN.md) &middot; [1 minute](docs/PITCH_1MIN.md) |
 | **What we need from IFSCA and GIFT IFIH** | [docs/RESIDENCY_ASK.md](docs/RESIDENCY_ASK.md) |
 | **Every measured number** | [docs/MEASURED_RESULTS.md](docs/MEASURED_RESULTS.md) |
 
@@ -48,8 +51,11 @@ An evidence-integrity company cannot win by gaming an audit.
 
 ## How it works, in one line
 
-**Read it. Check it. Refuse to guess.** Six steps. Three use a model. Three are plain code,
-and the plain code ones are the ones that check. A model cannot check a model.
+**Read it. Check it. Refuse to guess.** Six steps that matter. Three use a model, three are
+plain code, and the plain code ones are the ones that check. A model cannot check a model.
+
+Across the whole run: **9 roles, 4 of which use a model, and of the 40 steps a case takes,
+exactly 20 contain no model at all.** The Trace screen counts that itself.
 
 On 19 August we removed a model. The scope step used to be one, and on a live run it read a
 document and returned two fields, silently dropping a third that was plainly on the page. We
@@ -69,6 +75,7 @@ silent picks in both.** Nothing measurable was lost and one failure mode went wi
 | Screens verified on the deployed build | 182, across all 26 cases |
 | Tests, canon conformance, filing history | 299 of 299, 24 of 24, 9 of 9 |
 | Four-pillar prediction against the published rubric | **90.1**, technical execution 92.5 |
+| Roles using a model | **4 of 9**, reduced from 7 on 19 August with no measured loss |
 
 Ground truth is written into every case by deterministic code **before any model sees it**, so
 the system is not grading its own homework. We wrote the conflicts, which makes this a

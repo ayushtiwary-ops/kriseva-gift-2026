@@ -18,6 +18,9 @@ cd "$HERE"
 
 echo "1. Rendering document pages"
 for pair in "ARCHITECTURE_SIMPLE:architecture-simple:The whole system in one page" \
+            "PRODUCT_AND_WORKFLOW:product-and-workflow:The product and workflow" \
+            "PITCH_3MIN:pitch-3min:The 3 minute pitch" \
+            "PITCH_1MIN:pitch-1min:The 1 minute pitch" \
             "RESIDENCY_ASK:residency-ask:What we need from IFSCA and GIFT IFIH" \
             "MEASURED_RESULTS:measured-results:Measured results" \
             "AGENT_CONTRACT_PACK:agent-contracts:Agent contracts" \
@@ -33,6 +36,7 @@ echo "   ok"
 echo "2. Uploading the hub"
 aws s3 cp index.html "s3://$BUCKET/index.html" --content-type "text/html; charset=utf-8" --cache-control "public,max-age=120" >/dev/null
 aws s3 cp deck/index.html "s3://$BUCKET/deck/index.html" --content-type "text/html; charset=utf-8" --cache-control "public,max-age=120" >/dev/null
+aws s3 cp video.html "s3://$BUCKET/video.html" --content-type "text/html; charset=utf-8" --cache-control "public,max-age=120" >/dev/null
 aws s3 cp styles/hub.css "s3://$BUCKET/styles/hub.css" --content-type "text/css; charset=utf-8" --cache-control "public,max-age=120" >/dev/null
 aws s3 cp README.md "s3://$BUCKET/README.md" --content-type "text/plain; charset=utf-8" >/dev/null
 for f in docs/*.html; do
@@ -61,7 +65,7 @@ fi
 echo
 echo "4. Verifying"
 fail=0
-for p in "index.html" "deck/index.html" "styles/hub.css" "docs/residency-ask.html" "docs/measured-results.html" "prototype/index.html"; do
+for p in "index.html" "deck/index.html" "video.html" "video/KRISEVA_ATTEST_demo.mp4" "styles/hub.css" "docs/residency-ask.html" "docs/product-and-workflow.html" "prototype/index.html"; do
   code=$(curl -s -o /dev/null -w "%{http_code}" "$BASE/$p")
   printf "   %-34s %s\n" "$p" "$code"
   [ "$code" = "200" ] || fail=1
