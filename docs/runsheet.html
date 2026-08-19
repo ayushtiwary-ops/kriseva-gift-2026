@@ -1,0 +1,51 @@
+<title>What to do, in order</title>
+<link rel="stylesheet" href="../styles/hub.css">
+<div class="strip">KRISEVA ATTEST &middot; synthetic data only &middot; research stage &middot; no customer or entity data</div>
+<div class="wrap"><h1>AYUSH: what to do from tomorrow morning, in order</h1>
+<p>Status: STABLE. Written 2026-08-20. <strong>Everything is built. Nothing is left to make.</strong> From here your only jobs are running the demo and being able to answer anything.</p>
+<h2>The one link that contains everything</h2>
+<p><strong>https://kriseva-gift-backup-2026.s3.us-east-1.amazonaws.com/index.html</strong></p>
+<p>If your laptop dies, that link is the entire submission: the working prototype, the video, the deck, every document, and the ask.</p>
+<h2>Thursday 20 August, about 3 hours of work total</h2>
+<p>Do them in this order. Each one is timed.</p>
+<h3>1. Watch the video. 2 minutes.</h3>
+<p>Watch it once as a stranger. It is the story you are going to tell, in the order you are going to tell it. Everything else on this sheet is that story with more detail.</p>
+<h3>2. Read the architecture page. 10 minutes.</h3>
+<p><code>docs/architecture-simple.html</code>. <strong>Learn only this</strong>: six steps that matter, three use a model, three are plain code, and the plain code ones are the ones that check. Then the number: 20 of the 40 steps in a run contain no model at all.</p>
+<p>If you can say that without thinking, you can survive any technical question, because every follow-up hangs off it.</p>
+<h3>3. Drill the Q&amp;A bank. 60 minutes, and this is the one that matters.</h3>
+<p><code>docs/master-qa-bank.html</code>. <strong>87 questions.</strong> Cover the answers. Say each one out loud. If it takes more than fifteen seconds you do not know it yet.</p>
+<p>Do sections 1, 3 and 8 twice. Section 1 is the first thirty seconds, section 3 is the architecture, section 8 is the hostile ones. Those three carry the room.</p>
+<p><strong>Section 9 is the do-not-say list. Read it last thing at night.</strong></p>
+<h3>4. Run the demo three times. 20 minutes.</h3>
+<pre><code>cd ~/kriseva-rehearsal-DELETE-BEFORE-21AUG/attest &amp;&amp; bash scripts/demo-ready.sh</code></pre>
+<p>Wait for <code>DEMO READY</code>, then open <code>http://localhost:4000</code> and walk the spine three times without notes: dashboard → drawn capital → complaints → trace → sign-off → receipt → tamper. Third time, say the pitch over it.</p>
+<h3>5. Read the 3 minute pitch out loud, twice, on a timer. 15 minutes.</h3>
+<p><code>docs/pitch-3min.html</code>. It is written to be spoken at an unhurried pace. If you finish under 2:40 you are rushing. If you pass 3:00 cut the Trace narration to one sentence.</p>
+<h3>6. Read the 1 minute pitch once. 5 minutes.</h3>
+<p><code>docs/pitch-1min.html</code>. Four short paragraphs. Do not try to compress the 3 minute version; say fewer things properly.</p>
+<h3>7. Send Mahek her message. 2 minutes.</h3>
+<p>It is written for you at <code>MESSAGE_TO_MAHEK.md</code>. Copy, paste, send.</p>
+<h3>8. Delete the rehearsal build. 1 minute.</h3>
+<p><strong>Before you travel. Not on Friday morning.</strong></p>
+<pre><code>rm -rf ~/kriseva-rehearsal-DELETE-BEFORE-21AUG</code></pre>
+<p>Everything survives: the hub, the video, the prototype on AWS, the private source repo, and the carry pack. What you are deleting is the local working copy that must not travel.</p>
+<h2>Friday, before 14:00</h2>
+<p>Nothing to build. Three things to check.</p>
+<div class="tw"><table><thead><tr><th>Check</th><th>How</th></tr></thead><tbody><tr><td>The backup link loads on venue wifi</td><td>Open it in the browser you will present in, then <strong>leave the tab open</strong></td></tr><tr><td>The pinned video URL plays</td><td><code>/video/v4-lewis/KRISEVA_ATTEST_demo.mp4</code>, a path no cache has seen</td></tr><tr><td>The carry pack is on your laptop</td><td><code>AGENT_CONTRACT_PACK.md</code>, <code>UI_LANGUAGE_AND_VISUALS_SPEC.md</code>, <code>SCHEMA_PACK.md</code>, <code>BUILD_SPEC_v1.md</code>, <code>CANON.md</code>, <code>RUNNING_COST_AND_LIMITS.md</code></td></tr></tbody></table></div>
+<p>Then at 14:00 the repository starts empty and you build from the pack.</p>
+<h2>Saturday, the two pitches</h2>
+<p><strong>Round 1, 14:00.</strong> 3 minutes plus 7 minutes of Q&amp;A. All fifty teams, parallel panels, strict timer. Top 20 advance.</p>
+<ul><li>You: the machine, the numbers, the ask.</li><li>Mahek: Priya's day, the demo narration, and stopping you if you say a number</li></ul>
+<p>  that is not in the fact card.</p>
+<p><strong>Round 2, 17:00.</strong> 1 minute plus 4 minutes, Grand Jury, Top 20. Top 15 announced at closing.</p>
+<ul><li>One minute means four short paragraphs. Say fewer things properly.</li></ul>
+<h2>The five sentences to have ready at all times</h2>
+<ol><li>"Every system built for this picks a number. Ours refuses to."</li><li>"Nine roles, forty steps. Half those steps contain no model at all, because a model cannot check a model."</li><li>"The records must survive eight years. The reasoning survives fifteen days. That gap is the company."</li><li>"We have never seen a real quarterly return. Everything still missing is something only access can fix."</li><li>"We predicted a frontier model could not do this. We ran it, and it could. We are showing you that table anyway."</li></ol>
+<h2>If something goes wrong</h2>
+<p><code>BACKUP_RUNBOOK.md</code>, one page, on your phone. The short version:</p>
+<div class="tw"><table><thead><tr><th>If this fails</th><th>Open this</th></tr></thead><tbody><tr><td>Laptop, port, server or local build</td><td>the prototype URL on AWS</td></tr><tr><td>AWS</td><td>the GitHub Pages mirror</td></tr><tr><td>All networks</td><td>the video, offline on your phone</td></tr></tbody></table></div>
+<p><strong>Say it plainly when you switch.</strong> "The laptop is not cooperating, so I am opening the deployed build. Same product, same numbers, all synthetic." A calm switch reads as preparation. An apology reads as a failure.</p>
+<a class="backlink" href="../index.html">&larr; back to the submission hub</a>
+<footer>Kriseva AI Private Limited &middot; GIFT IFIH Young Builders' Program 2026 &middot; all data synthetic</footer>
+</div>

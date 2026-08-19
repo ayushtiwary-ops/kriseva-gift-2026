@@ -21,6 +21,8 @@ for pair in "ARCHITECTURE_SIMPLE:architecture-simple:The whole system in one pag
             "PRODUCT_AND_WORKFLOW:product-and-workflow:The product and workflow" \
             "MAHEK_BUYER_BRIEF:buyer-brief:The buyer, in one read" \
             "VOICE_STACK:voice-stack:The voice stack" \
+            "MASTER_QA_BANK:master-qa-bank:87 questions, with answers" \
+            "FOUNDER_RUNSHEET:runsheet:What to do, in order" \
             "PITCH_3MIN:pitch-3min:The 3 minute pitch" \
             "PITCH_1MIN:pitch-1min:The 1 minute pitch" \
             "RESIDENCY_ASK:residency-ask:What we need from IFSCA and GIFT IFIH" \
