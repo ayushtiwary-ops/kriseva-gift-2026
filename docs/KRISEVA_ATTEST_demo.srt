@@ -1,115 +1,107 @@
 1
-00:00:02,200 --> 00:00:04,535
+00:00:00,000 --> 00:00:02,270
 It is the eighteenth of July.
 
 2
-00:00:04,535 --> 00:00:08,495
-Priya has three days to file her fund's quarterly return.
+00:00:02,270 --> 00:00:07,890
+Priya is a Compliance Officer, and she has three days left to file her fund's quarterly return.
 
 3
-00:00:08,495 --> 00:00:13,955
-She opens the administrator's statement. Drawn capital: seventeen point eight million.
+00:00:07,890 --> 00:00:12,235
+Four numbers have to go on it. They arrive from five different parties.
 
 4
-00:00:13,955 --> 00:00:17,190
-She opens her own ledger. Nineteen point three.
+00:00:12,235 --> 00:00:14,755
+Three of the four do not agree.
 
 5
-00:00:17,190 --> 00:00:20,425
-Both official. Both signed. Neither is wrong.
+00:00:14,755 --> 00:00:19,250
+The administrator says drawn capital is seventeen point eight million.
 
 6
-00:00:20,425 --> 00:00:23,610
-She cannot tell an error from a timing difference.
+00:00:19,250 --> 00:00:22,120
+Her own ledger says nineteen point three.
 
 7
-00:00:23,610 --> 00:00:26,245
-So she emails the administrator.
+00:00:22,120 --> 00:00:25,640
+Both are official. Both are signed. Neither is wrong.
 
 8
-00:00:26,245 --> 00:00:32,655
-The answer comes back in a reply, and that reply is now the only record of why she filed what she filed.
+00:00:25,640 --> 00:00:31,835
+A capital call landed at five forty-two in the evening. The administrator had closed its books at four.
 
 9
-00:00:32,655 --> 00:00:34,640
-She signs personally.
+00:00:31,835 --> 00:00:36,230
+So she emails the administrator, and the answer comes back in a reply.
 
 10
-00:00:34,640 --> 00:00:36,900
-In October, Priya leaves.
+00:00:36,230 --> 00:00:40,750
+That reply is now the only record of why she filed what she filed.
 
 11
-00:00:36,900 --> 00:00:42,510
-Her successor opens the same fund, finds the same two numbers, and none of the reasoning.
+00:00:40,750 --> 00:00:42,820
+In October, she leaves.
 
 12
-00:00:42,510 --> 00:00:47,295
-The records must survive eight years. The reasoning survives fifteen days.
+00:00:42,820 --> 00:00:46,690
+Her successor inherits the numbers, and none of the reasoning.
 
 13
-00:00:47,295 --> 00:00:50,155
-Every system built for this picks one.
+00:00:46,690 --> 00:00:51,310
+The records must survive eight years. The reasoning survives fifteen days.
 
 14
-00:00:50,155 --> 00:00:54,740
-Take the figure most documents agree on. It files seventeen point eight.
+00:00:51,310 --> 00:00:54,155
+Every system built for this picks one.
 
 15
-00:00:54,740 --> 00:00:57,975
-That is the wrong number, and nothing announces it.
+00:00:54,155 --> 00:00:58,700
+Take the figure most documents agree on, and it files seventeen point eight.
 
 16
-00:00:57,975 --> 00:00:59,885
-We refuse to pick.
+00:00:58,700 --> 00:01:01,895
+That is the wrong number, and nothing announces it.
 
 17
-00:00:59,885 --> 00:01:04,820
-Every number is pinned to the exact line it came from, and the moment it was true.
+00:01:01,895 --> 00:01:03,915
+So we refuse to pick.
 
 18
-00:01:04,820 --> 00:01:07,180
-Both documents are correct.
+00:01:03,915 --> 00:01:08,710
+Every number is pinned to the exact line it came from, and the moment it was true.
 
 19
-00:01:07,180 --> 00:01:13,315
-A capital call landed at five forty-two in the evening, after the administrator had closed at four.
+00:01:08,710 --> 00:01:12,455
+This field is different. No document contains it at all.
 
 20
-00:01:13,315 --> 00:01:16,725
-And this number appears in no document at all.
-
-21
-00:01:16,725 --> 00:01:20,885
+00:01:12,455 --> 00:01:16,625
 So it cannot be decided. Only attested, by a named person.
 
+21
+00:01:16,625 --> 00:01:19,970
+Nine roles run the whole case in under eight seconds.
+
 22
-00:01:20,885 --> 00:01:23,295
-Nine roles. Forty steps.
+00:01:19,970 --> 00:01:25,415
+Twenty of those forty steps contain no model at all, because a model cannot check a model.
 
 23
-00:01:23,295 --> 00:01:28,105
-Half of them contain no model at all, because a model cannot check a model.
+00:01:25,415 --> 00:01:30,210
+Priya decides in writing. A second person confirms. Then it seals.
 
 24
-00:01:28,105 --> 00:01:31,790
-Priya decides, in writing. Rajiv confirms.
+00:01:30,210 --> 00:01:35,030
+Two hundred and seventeen entities file this return four times a year.
 
 25
-00:01:31,790 --> 00:01:35,450
-Then it seals, and one changed byte breaks the chain.
+00:01:35,030 --> 00:01:39,525
+We have not measured hours saved, because we have never seen a real return.
 
 26
-00:01:35,450 --> 00:01:39,110
-Twenty-four out of twenty-four planted failures, caught.
+00:01:39,525 --> 00:01:45,720
+That is what we need from IFSCA. Twelve introductions, and twenty quarters of real documents.
 
 27
-00:01:39,110 --> 00:01:42,970
-Zero silent picks. A full case in under eight seconds.
-
-28
-00:01:42,970 --> 00:01:47,980
-Every document here is fictional. We have never seen a real quarterly return.
-
-29
-00:01:47,980 --> 00:01:52,040
-But when Priya's successor opens that fund, she reads why.
+00:01:45,720 --> 00:01:51,290
+Then we can measure the one thing nobody has. How often these documents actually disagree.
