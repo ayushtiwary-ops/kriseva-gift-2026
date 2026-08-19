@@ -1,0 +1,138 @@
+<title>KRISEVA ATTEST deck</title>
+<link rel="stylesheet" href="../styles/hub.css">
+<style>
+.deck{max-width:1000px;margin:0 auto;padding:0 24px}
+.slide{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+  padding:44px 48px;margin:26px 0;min-height:400px;display:flex;flex-direction:column;
+  justify-content:center;scroll-margin-top:20px}
+.slide .n{font-family:var(--mono);font-size:12px;letter-spacing:.14em;color:var(--ink-3);
+  text-transform:uppercase;margin-bottom:20px}
+.slide h2{font-size:clamp(24px,3.6vw,36px);margin:0 0 18px;border:none;padding:0;
+  letter-spacing:-.02em;line-height:1.16}
+.slide p{font-size:18px;color:var(--ink-2);max-width:62ch}
+.slide .big{font-size:clamp(38px,7vw,68px);font-family:var(--mono);font-weight:600;
+  color:var(--accent);letter-spacing:-.03em;line-height:1.05;margin:10px 0 6px}
+.slide ul{font-size:17.5px;color:var(--ink-2)}
+.slide strong{color:var(--ink)}
+.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:22px;margin-top:14px}
+.kv div{border-left:3px solid var(--accent);padding-left:14px}
+.kv .k{font-family:var(--mono);font-size:28px;font-weight:600;color:var(--accent);letter-spacing:-.02em}
+.kv .v{font-size:14.5px;color:var(--ink-3);margin-top:2px}
+.nav{position:sticky;top:0;background:var(--bg);border-bottom:1px solid var(--line);
+  padding:12px 0;z-index:5;font-family:var(--mono);font-size:13px}
+@media print{.nav{display:none}.slide{page-break-after:always;border:none;min-height:0}}
+</style>
+<div class="strip">SYNTHETIC DATA ONLY &middot; FICTIONAL ENTITIES &middot; RESEARCH STAGE</div>
+<div class="nav"><div class="deck"><a href="../index.html">&larr; hub</a> &nbsp;&middot;&nbsp;
+<a href="https://kriseva-gift-backup-2026.s3.us-east-1.amazonaws.com/prototype/index.html">open the prototype</a>
+&nbsp;&middot;&nbsp; <span style="color:var(--ink-3)">10 slides &middot; press Cmd/Ctrl+P for PDF</span></div></div>
+<div class="deck">
+
+<section class="slide"><div class="n">Kriseva AI Private Limited &middot; GIFT IFIH 2026</div>
+<h2>KRISEVA ATTEST</h2>
+<p style="font-size:21px">When the source documents disagree, the software refuses to pick, shows its
+working, and hands the decision to a named person who signs for it.</p>
+<p style="margin-top:26px;font-size:15px;color:var(--ink-3)">Entity-side evidence integrity for
+regulatory reporting in GIFT IFSC. All data synthetic.</p></section>
+
+<section class="slide"><div class="n">Slide 2 &middot; the problem</div>
+<h2>Four numbers, five sources, one personal signature</h2>
+<p>A fund management entity files a quarterly return 21 days after quarter end, four times a year. The
+numbers arrive from the administrator, the internal ledger, the subscription register, the custodian and
+the valuer. They close their books at different times and answer different questions.</p>
+<p><strong>So they disagree, and nothing in the documents announces it.</strong> The Compliance Officer
+and the Principal Officer sign personally.</p>
+<div class="kv">
+<div><div class="k">217</div><div class="v">fund management entities in GIFT IFSC</div></div>
+<div><div class="k">360</div><div class="v">schemes they run between them</div></div>
+<div><div class="k">21 days</div><div class="v">from quarter end to the filing deadline</div></div>
+</div></section>
+
+<section class="slide"><div class="n">Slide 3 &middot; today</div>
+<h2>The reasoning lives in an email thread</h2>
+<p>The officer sees two numbers, cannot tell an error from a timing difference, emails the
+administrator, and the answer lives in that reply. Nothing records why the number that was filed was
+chosen.</p>
+<p>A change of Compliance Officer is notified to IFSCA within 15 days. <strong>The records have to
+survive 8 years. The reasoning is the part that dies.</strong></p></section>
+
+<section class="slide"><div class="n">Slide 4 &middot; what every system does instead</div>
+<h2>It picks a number, and nothing announces it</h2>
+<p>Given two figures, a normal system files the one most documents agree on. On our demo case that rule
+files the wrong figure for drawn capital, confidently, with no flag.</p>
+<p><strong>A silent pick is the only error nobody downstream can detect</strong>, because there is no
+disagreement left to find. That is the failure this product exists to refuse.</p></section>
+
+<section class="slide"><div class="n">Slide 5 &middot; what ATTEST does</div>
+<h2>It refuses, and shows the working</h2>
+<ul>
+<li>Every candidate number is bound to the exact line it came from, and any quote that cannot be located
+in the source is dropped.</li>
+<li>Where sources disagree, the field is held open with every reading preserved and the cause named.</li>
+<li>Every verdict on screen is clickable and opens the tests that ran, which fired, which were ruled out,
+and who stands behind each document.</li>
+<li>A named human decides in writing, a second person signs off, and the record is sealed so an edit
+breaks the chain.</li>
+</ul></section>
+
+<section class="slide"><div class="n">Slide 6 &middot; architecture</div>
+<h2>Nine roles. Two of them contain no model</h2>
+<p>The binder locates every quote in the source itself and ignores whatever the model claimed. The
+validator checks the accounting identities. Both are ordinary code.</p>
+<p><strong>A model cannot verify a model.</strong> The critic and the extractor are forced onto
+independent model families, checked when the system starts, so a model criticising its own reading is a
+startup failure rather than a quiet one.</p>
+<div class="kv">
+<div><div class="k">40</div><div class="v">agent actions per case</div></div>
+<div><div class="k">5</div><div class="v">models, across four companies</div></div>
+<div><div class="k">14,700</div><div class="v">tokens, recorded per action</div></div>
+</div></section>
+
+<section class="slide"><div class="n">Slide 7 &middot; measured</div>
+<h2>24 of 24, and zero silent picks</h2>
+<div class="big">24 / 24</div>
+<p>Ten distinct failure archetypes across 24 synthetic cases. The right field named with exactly the
+planted cause, every time. <strong>Zero silent picks.</strong></p>
+<p>The ground truth is written into each case by deterministic code before any model sees it, so the
+system is not grading its own homework. We wrote the conflicts, which makes this a consistency check
+rather than an accuracy claim, and we say so.</p></section>
+
+<section class="slide"><div class="n">Slide 8 &middot; the honest slide</div>
+<h2>We predicted a frontier model would fail this. It did not</h2>
+<p>We ran the same documents through three frontier models, each told to answer UNCERTAIN when sources
+disagree. <strong>All three abstained correctly on every conflicted field, with zero silent picks.</strong></p>
+<p>One column separated them: evidence localisation, where one model could not produce a single quote
+that actually appeared in the source document. We are showing that table rather than the one we hoped
+for, because a measured result that surprises us is worth more than a predicted one that flatters us.</p>
+<p><strong>What no prompt produced: a named decider, a written reason, a second signature, or the same
+answer eleven months from now.</strong></p></section>
+
+<section class="slide"><div class="n">Slide 9 &middot; what is not built</div>
+<h2>Said before you find it</h2>
+<ul>
+<li><strong>Per-field regulatory rule mapping is not built.</strong> It says so on screen. We will not
+invent a citation.</li>
+<li><strong>The offline path is recorded responses, not a local model.</strong> The interface exists, the
+wiring does not.</li>
+<li><strong>We have never seen a real quarterly return.</strong> Every document is fictional and says so
+on its face.</li>
+<li><strong>Nine defects were found by using the product</strong>, all of which survived 299 passing
+tests. All nine are published.</li>
+</ul></section>
+
+<section class="slide"><div class="n">Slide 10 &middot; the ask</div>
+<h2>Four things, none of them money</h2>
+<div class="kv">
+<div><div class="k">12</div><div class="v">introductions to entities, of 217</div></div>
+<div><div class="k">20</div><div class="v">quarter-sets of real redacted documents</div></div>
+<div><div class="k">20 hrs</div><div class="v">with the officers who sign</div></div>
+<div><div class="k">2 hrs</div><div class="v">with supervision, on the rule mapping</div></div>
+</div>
+<p style="margin-top:26px">We got this far with no access, no data and no customers.
+<strong>Everything still missing is something only access can fix.</strong></p>
+<p style="font-size:15px;color:var(--ink-3)">By 30 October: a published base-rate study, extraction
+accuracy measured on real formats, the rule mapping shipped, and two signed pilots.</p></section>
+
+</div>
+<footer><div class="deck">Kriseva AI Private Limited &middot; all data synthetic &middot; no customer,
+fund or personal data anywhere</div></footer>

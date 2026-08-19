@@ -1,0 +1,122 @@
+<title>KRISEVA ATTEST</title>
+<link rel="stylesheet" href="styles/hub.css">
+<div class="strip">SYNTHETIC DATA ONLY &middot; FICTIONAL ENTITIES &middot; RESEARCH STAGE &middot; NO CUSTOMER, FUND OR PERSONAL DATA ANYWHERE</div>
+
+<header class="masthead"><div class="wrap">
+<p class="eyebrow">Kriseva AI Private Limited &middot; GIFT IFIH Young Builders' Program 2026</p>
+<h1>KRISEVA ATTEST</h1>
+<p class="lede">Entity-side evidence integrity for regulatory reporting in GIFT IFSC.
+When the source documents disagree, the software refuses to pick, shows its working,
+and hands the decision to a named person who signs for it.</p>
+<p style="margin-top:26px">
+<a class="cta" href="https://kriseva-gift-backup-2026.s3.us-east-1.amazonaws.com/prototype/index.html">Open the working prototype</a>
+<a class="cta cta--ghost" href="docs/residency-ask.html">What we need from the residency</a>
+</p>
+</div></header>
+
+<div class="wrap">
+
+<div class="note"><strong>What this link is.</strong> The complete submission in one place, and the
+backup if anything fails on stage. The prototype above is the real product, deployed and running,
+with every screen and all 26 cases. It is a recorded walkthrough of the same build: the application
+code is embedded unmodified and only the network layer is replaced by responses captured from the
+running server, so nothing is reimplemented to make the demo work.</div>
+
+<h2>The problem, in one paragraph</h2>
+<p>A fund management entity in GIFT IFSC files a quarterly return 21 calendar days after quarter end,
+four times a year. The numbers on it arrive from several independent parties: the administrator, the
+internal ledger, the subscription register, the custodian, the valuer. Those parties close their books
+at different times and answer different questions, so they disagree, and nothing in the documents
+announces it. The Compliance Officer and the Principal Officer sign personally. Today the reasoning
+behind each number lives in an email thread, and when the officer leaves, it goes with them.</p>
+
+<p><strong>Every system built for this picks a number.</strong> A silent pick is the one error nobody
+downstream can detect, because there is no disagreement left to find. That is the failure this product
+exists to refuse.</p>
+
+<h2>What we measured</h2>
+<div class="cards">
+<div class="card"><span class="num">24 / 24</span><h3>Planted failures caught</h3><p>Ten distinct archetypes across 24 cases. The right field named with exactly the planted cause, every time.</p></div>
+<div class="card"><span class="num">0 / 24</span><h3>Silent picks</h3><p>The software never chose a value. Not once. It is the only failure nobody downstream can catch.</p></div>
+<div class="card"><span class="num">3.3&ndash;7.9s</span><h3>A complete case</h3><p>Nine roles, 40 agent actions, five models across four companies, about 14,700 tokens, recorded per action.</p></div>
+<div class="card"><span class="num">182</span><h3>Screens verified</h3><p>Every screen of every entity, swept on the deployed cloud build. No machine word reaches a screen, no screen renders empty.</p></div>
+</div>
+
+<p>The ground truth is not ours to fudge: the corpus generator writes the expected field and cause into
+every case in deterministic code, <strong>before any model sees it</strong>. The scorer reads that and
+calls the live API. Full method, scope and limits in <a href="docs/measured-results.html">measured results</a>.</p>
+
+<div class="note"><strong>The result that went against us, published anyway.</strong> We predicted a
+frontier model with a good prompt could not do this. We ran it. Told to abstain on disagreement, three
+frontier models abstained correctly on every conflicted field, with zero silent picks. One column
+separated them, and it was evidence localisation. We are showing that table rather than the one we
+hoped for. <a href="docs/measured-results.html">See section 2</a>.</div>
+
+<h2>How it works</h2>
+<div class="tw"><table>
+<thead><tr><th>Role</th><th>What it does</th><th>Model</th></tr></thead>
+<tbody>
+<tr><td>Orchestrator</td><td>Writes the plan and holds one deadline for the whole run</td><td>No model. Deterministic</td></tr>
+<tr><td>Triage</td><td>Decides which documents carry which fields</td><td>Nova Micro</td></tr>
+<tr><td>Extractor</td><td>Reads candidate values and quotes them</td><td>Nova Lite</td></tr>
+<tr><td><strong>Binder</strong></td><td>Locates every quote in the source itself and drops what it cannot find</td><td><strong>No model, by design</strong></td></tr>
+<tr><td><strong>Validator</strong></td><td>Checks the accounting identities</td><td><strong>No model, by design</strong></td></tr>
+<tr><td>Critic</td><td>Attacks the reading. Forced onto an independent model family</td><td>Mistral Large 3</td></tr>
+<tr><td>Reconciler</td><td>Describes the disagreement. Forbidden from resolving it</td><td>GLM-5</td></tr>
+<tr><td>Narrator</td><td>Hands off to a named human</td><td>Nova Lite</td></tr>
+<tr><td>Learner</td><td>Records the lesson</td><td>No model. Deterministic</td></tr>
+</tbody></table></div>
+
+<p><strong>Two of the nine roles contain no model at all, because a model cannot verify a model.</strong>
+The critic and the extractor are forced onto different model families, checked when the system starts
+rather than in review, so a model criticising its own reading is a startup failure and never a quiet one.</p>
+
+<h2>What we have not built, said before you find it</h2>
+<ul>
+<li><strong>Per-field regulatory rule mapping is not built.</strong> It is stated as absent on screen. We
+will not invent a citation, and that is ask 4 of the residency.</li>
+<li><strong>The offline path is recorded responses plus deterministic matching, not a local model.</strong>
+The provider interface exists; the wiring does not.</li>
+<li><strong>We have never seen a real quarterly return.</strong> Every document here is fictional and
+labelled fictional on its face.</li>
+<li><strong>No dollar cost is quoted</strong>, because the account has no pricing API access, so any price
+would be recalled rather than sourced.</li>
+</ul>
+
+<h2>What we got to with no access at all</h2>
+<p>No customers, no data, no introductions, no industry background in fund administration. Everything
+here was worked out from published IFSCA circulars, the enforcement record and the DRR tender documents,
+and built on a starter AWS account.</p>
+<div class="cards">
+<div class="card"><span class="num">20</span><h3>Fictional entities</h3><p>26 cases, 115 source documents, 10 failure archetypes, all synthetic and labelled synthetic.</p></div>
+<div class="card"><span class="num">80</span><h3>Prior filings</h3><p>Five quarters per entity, 106 recorded disagreements, 187 officer notes, so the product can be seen lived with rather than demonstrated once.</p></div>
+<div class="card"><span class="num">299</span><h3>Tests passing</h3><p>Plus 24 of 24 canon conformance and 9 of 9 filing-history checks, re-run after every change.</p></div>
+<div class="card"><span class="num">9</span><h3>Defects found by use</h3><p>All nine survived the tests and the contract. Every one was found by opening the product and clicking, and all are published.</p></div>
+</div>
+
+<h2>Everything, in order</h2>
+<div class="toc"><ul>
+<li><a href="https://kriseva-gift-backup-2026.s3.us-east-1.amazonaws.com/prototype/index.html"><strong>The working prototype</strong></a>, deployed, all 26 cases, every screen</li>
+<li><a href="deck/index.html"><strong>The pitch deck</strong></a>, ten slides</li>
+<li><a href="docs/residency-ask.html"><strong>What we need from the residency</strong></a>, in exact numbers, with what each unblocks</li>
+<li><a href="docs/measured-results.html"><strong>Measured results</strong></a>, every number, its method, and what it does not prove</li>
+<li><a href="docs/cost-and-limits.html">What it costs to run</a>, measured rate limits and what broke on the live path</li>
+<li><a href="docs/defect-ledger.html">The defect ledger</a>, nine defects found by using it, published in full</li>
+<li><a href="docs/scenario-design.html">Scenario design</a>, the ten failure archetypes and why each one exists</li>
+<li><a href="docs/canon.html">The fictional world</a>, every entity, document and number in the demo</li>
+<li><a href="docs/agent-contracts.html">Agent contracts</a>, the prompts, the validators, and the rules they enforce</li>
+</ul></div>
+
+<h2>The ask</h2>
+<p>Four things, none of them money. Twelve introductions to fund management entities, of the 217
+registered. Five entities' documents, redacted, four quarters each. Twenty hours with the officers who
+sign. Two hours with supervision on which rule requires which field.</p>
+<p><strong>Everything still missing from this product is something only access can fix.</strong>
+<a href="docs/residency-ask.html">The full ask, with dates and commitments</a>.</p>
+
+<footer>
+Kriseva AI Private Limited &middot; Ayush Tiwary and Mahek &middot; GIFT IFIH Young Builders' Program 2026<br>
+All entities, documents, people and figures are fictional. No real fund, customer or personal data
+appears anywhere in this submission or in the prototype.
+</footer>
+</div>

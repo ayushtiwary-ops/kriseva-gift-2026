@@ -1,0 +1,74 @@
+<title>Measured results</title>
+<link rel="stylesheet" href="../styles/hub.css">
+<div class="strip">KRISEVA ATTEST &middot; synthetic data only &middot; research stage &middot; no customer or entity data</div>
+<div class="wrap"><h1>MEASURED RESULTS: the numbers, how they were produced, and what they do not prove</h1>
+<p>Status: STABLE. Produced 2026-08-19 by running the rehearsal build, not by reading it. Every table below names the command that made it. Nothing here is an estimate, and where a number cannot be sourced this document says so instead of supplying one.</p>
+<p>The reason this file exists separately from the pitch: on a synthetic corpus, the temptation to quote a flattering number is at its highest, and the honesty criterion is 20 percent of the score by rule. A measured result that surprises us is worth more than a predicted one that flatters us.</p>
+<h2>1. The headline, and its exact scope</h2>
+<p><strong>On 24 synthetic cases carrying 10 planted failure archetypes, the system named the right field with exactly the planted cause 24 times out of 24, and chose a value by itself zero times out of 24.</strong></p>
+<div class="tw"><table><thead><tr><th>Measure</th><th>Result</th></tr></thead><tbody><tr><td>Cases scored</td><td>24</td></tr><tr><td>Planted cause reported exactly</td><td><strong>24 of 24</strong></td></tr><tr><td>Silent picks, a value chosen by software</td><td><strong>0 of 24</strong></td></tr></tbody></table></div>
+<h3>Why this is not the system grading its own homework</h3>
+<p>The labels are not derived from the system's output. The corpus generator writes <code>scenario.expectedField</code> and <code>scenario.expectedCause</code> into every case at build time, in deterministic code, <strong>before any model sees the case</strong>. The scorer reads those two fields, calls the live API, and compares.</p>
+<pre><code>for each case in the corpus:
+    planted = case.scenario.expectedField, case.scenario.expectedCause
+    live    = GET /api/case/&lt;caseId&gt;
+    field   = live.fields[planted.field]
+    reported = field.conflict.cause  or  field.duplicate.cause
+    correct  = (reported == planted.cause)
+    silent   = (field.selectedValue is not null)</code></pre>
+<p>The one subtlety worth stating on stage if asked. Two of the ten archetypes are duplicate documents, where the same statement arrives twice under different filenames. The system reports those under a separate <code>duplicate</code> key and leaves the field <code>SUPPORTED</code>, which is correct: three candidates that agree are not a disagreement. It says the copy was counted once rather than twice. A first pass of this scorer read only the conflict key and reported 22 of 24. The product was right and the scorer was wrong, which is worth recording because it is the same class of mistake as the eval label file in section 5.</p>
+<h3>The qualifiers, and they matter</h3>
+<ul><li><strong>We wrote the conflicts.</strong> A detector scored against conflicts its own authors</li></ul>
+<p>  planted is a consistency check, not an accuracy claim about real documents. It   proves the pipeline does what the design says on ten distinct shapes of   failure. It does not predict behaviour on a real quarterly return.</p>
+<ul><li><strong>This ran on the recorded path</strong>, which serves extraction from recorded model</li></ul>
+<p>  responses where the prompt hash matches and from a deterministic scan where it   does not. It measures the conflict logic, not a model's reading accuracy.</p>
+<ul><li><strong>The live path was measured separately</strong>, on the demo case only. See section 3.</li><li>One run per case. This says nothing about run-to-run variance on live models.</li></ul>
+<h2>2. The comparison against just using a good model, which did not go how we predicted</h2>
+<p><code>SCENARIO_DESIGN.md</code> section 3 planned to prove that a frontier model with a good prompt cannot do this. We ran it. <strong>It does not show that</strong>, and the pitch has never claimed it does.</p>
+<p>Measured 2026-08-19, 24 Bedrock calls, 36,955 tokens, 8 fields across 2 cases, one run per field. Each baseline got the documents, the field list, and an explicit instruction to answer <code>UNCERTAIN</code> when sources disagree. Steelmanned, not a strawman.</p>
+<div class="tw"><table><thead><tr><th>Arm</th><th>Correct abstentions</th><th>Silent picks</th><th>Answers correct</th><th>Quotes found in the source</th></tr></thead><tbody><tr><td>amazon.nova-pro-v1:0</td><td>4 of 4</td><td>0</td><td>4 of 4</td><td><strong>0 of 4</strong></td></tr><tr><td>mistral.mistral-large-3-675b-instruct</td><td>4 of 4</td><td>0</td><td>4 of 4</td><td>4 of 4</td></tr><tr><td>zai.glm-5</td><td>4 of 4</td><td>0</td><td>4 of 4</td><td>4 of 4</td></tr><tr><td>KRISEVA ATTEST</td><td>4 of 4</td><td>0</td><td>4 of 4</td><td>7 of 7</td></tr></tbody></table></div>
+<p><strong>Read honestly: on this small set, told to abstain, the models abstained.</strong> Two of the three matched us on everything except that we located more evidence, and we located more only because we surfaced more candidates. That is not a scoreboard win and it must not be presented as one.</p>
+<h3>What the table actually shows</h3>
+<p>One real separation, and it is Nova Pro at 0 of 4. Its quoted evidence could not be found in the source document character for character. A quote that cannot be located is a claim about a document rather than a citation of one, and on a signed regulatory return that is the difference between evidence and assertion. Our binder drops any candidate whose quote it cannot locate, which is why that column is the one worth pointing at.</p>
+<h3>The honest answer when a juror asks "so why not just use the model"</h3>
+<p>Say this, and do not reach past it:</p>
+<blockquote>"We ran that experiment and we will show you the table. Told to abstain, the models abstained, on eight fields, once each. So we are not going to claim a model cannot read a document, because we measured it and it can.  Three things did not come out of the prompt, and they are what we sell. The refusal is enforced in code that cannot be talked out of it, rather than requested from a model that complied this time at a sample size of eight. Every quote is checked against the source and dropped if it is not there, which is the one column where a frontier model scored zero. And none of the three produces a named decider, a written reason, a second signature, or the same answer eleven months later, because that is not a text-generation problem."</blockquote>
+<p><strong>What not to say.</strong> Do not claim the baselines failed. Do not quote the localisation column as though 7 of 7 beats 4 of 4; the denominators differ because we proposed more candidates. Do not present eight fields at n=1 as an accuracy benchmark in either direction.</p>
+<h2>3. What one complete case costs and how long it takes</h2>
+<p>Measured on the live path, three consecutive runs, from <code>RUNNING_COST_AND_LIMITS.md</code>.</p>
+<div class="tw"><table><thead><tr><th></th><th>Measured</th></tr></thead><tbody><tr><td>Agent actions</td><td>40</td></tr><tr><td>Wall clock, three consecutive live runs</td><td>3.3 s, 4.9 s, 7.9 s</td></tr><tr><td>Input tokens</td><td>13,699</td></tr><tr><td>Output tokens</td><td>about 1,000</td></tr><tr><td>Total tokens</td><td>about 14,700</td></tr><tr><td>Models involved</td><td>5, across 4 companies</td></tr><tr><td>Canon conformance on a live run</td><td>24 of 24</td></tr></tbody></table></div>
+<p>Input tokens came back identical to the token across three runs, because the prompts and documents are fixed. Only the output varies.</p>
+<p><strong>No dollar figure.</strong> The IAM user has no pricing API access, so any price would be recalled rather than sourced. Every agent action records its own token usage, so the cost of a case comes off the receipt at whatever the published rate is on the day.</p>
+<h2>4. The corpus, counted rather than remembered</h2>
+<p>Counted directly from <code>data/</code> and <code>public/history.json</code> on 2026-08-19.</p>
+<div class="tw"><table><thead><tr><th></th><th>Count</th></tr></thead><tbody><tr><td>Fictional entities</td><td>20</td></tr><tr><td>Cases</td><td>26</td></tr><tr><td>Source documents</td><td><strong>115</strong></td></tr><tr><td>Failure archetypes</td><td>10</td></tr><tr><td>Prior quarterly filings</td><td>80</td></tr><tr><td>Recorded disagreements across those filings</td><td>106</td></tr><tr><td>Unique officer notes</td><td><strong>187</strong></td></tr></tbody></table></div>
+<p>Two corrections to figures carried in the handover brief: the document count is 115, not 106, and the officer-note count is 187, not 186. Both were recounted from the files. Use these.</p>
+<p>All of it is synthetic and labelled synthetic. No real entity, fund, customer or person appears anywhere in it.</p>
+<h2>5. The eval file that libels the product, and what to do about it</h2>
+<p><code>data/eval-results.json</code> in the rehearsal build reports:</p>
+<blockquote>Coverage 11.9 percent. Abstention correctness 50 percent. Field recall 0 percent.</blockquote>
+<p>On a build that passes 299 of 299 tests and 24 of 24 canon checks. <strong>The product is not wrong. The label file is</strong>, in three separate ways:</p>
+<ol><li>59 of its 67 labels reference cases that were never generated.</li><li>Four labels mark F1 on the demo case as a field that should resolve to a</li></ol>
+<p>   single value of 42,500,000. CANON says F1 is a version conflict. The product    correctly abstains and is scored as a miss, four times over.</p>
+<ol><li>Two labels put the missing field at F3. CANON puts the correction conflict at</li></ol>
+<p>   F3 and the missing field at F4. They are transposed.</p>
+<p>The labels predate the final demo-case design and were never re-derived against it. Re-running the eval does not fix it, because the corpus is right and the answer key is wrong.</p>
+<p><strong>Do not ship this file, and do not quote a number from it.</strong> The rule for the Friday rebuild is in <code>AGENT_CONTRACT_PACK.md</code> section 7: labels are derived from CANON and from <code>scenario.expectedCause</code>, never hand-written, and the gate fails if a label names a case absent from the corpus or asserts a state CANON contradicts. That is five lines and it catches all three faults.</p>
+<p>If a judge opens <code>data/</code> and finds a self-reported 50 percent, no verbal correction recovers it.</p>
+<h2>6. Gate results as shipped</h2>
+<p>Run 2026-08-19 on the restored build, in this order, all green.</p>
+<div class="tw"><table><thead><tr><th>Gate</th><th>Result</th></tr></thead><tbody><tr><td><code>npm test</code></td><td>299 of 299</td></tr><tr><td><code>tools/canon_check.py</code></td><td>24 of 24</td></tr><tr><td><code>tools/history_check.py</code></td><td>9 of 9, 80 filings, 106 conflicts</td></tr><tr><td><code>tools/guardrail_check.py</code></td><td>clean on every document this session touched</td></tr><tr><td><code>tools/number_check.py</code></td><td>clean on every document this session touched</td></tr><tr><td><code>scripts/demo-ready.sh</code></td><td>DEMO READY</td></tr></tbody></table></div>
+<p>One caveat carried forward from the handover and still true: the test suite failed once at 283 of 284 while a browser sweep was driving the server concurrently. Not reproduced in seven subsequent runs, cause not established. Do not run <code>npm test</code> while driving the demo.</p>
+<h2>7. The four things these numbers do not prove</h2>
+<p>Say these before a juror finds them.</p>
+<ol><li><strong>Nothing here involves a real document.</strong> Every figure is measured on a</li></ol>
+<p>   corpus we wrote. It shows the system does what the design says. It does not    show what happens to a scanned page with a handwritten correction on it.</p>
+<ol><li><strong>The archetype result is a consistency check.</strong> Ten shapes of failure, all</li></ol>
+<p>   planted by us, all detected. A tenth archetype we did not think of is not in    the denominator.</p>
+<ol><li><strong>The baseline comparison is eight fields at one run each.</strong> It is too small</li></ol>
+<p>   to support a claim in either direction, including ours.</p>
+<ol><li><strong>Per-field regulatory rule mapping is not built.</strong> Which rule requires which</li></ol>
+<p>   field is stated as absent on screen and stays that way. We are not inventing    a citation to fill it.</p>
+<a class="backlink" href="../index.html">&larr; back to the submission hub</a>
+<footer>Kriseva AI Private Limited &middot; GIFT IFIH Young Builders' Program 2026 &middot; all data synthetic</footer>
+</div>

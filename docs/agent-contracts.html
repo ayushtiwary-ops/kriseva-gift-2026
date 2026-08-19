@@ -1,0 +1,302 @@
+<title>Agent contracts</title>
+<link rel="stylesheet" href="../styles/hub.css">
+<div class="strip">KRISEVA ATTEST &middot; synthetic data only &middot; research stage &middot; no customer or entity data</div>
+<div class="wrap"><h1>AGENT CONTRACT PACK: what lives only in code, and dies on Thursday</h1>
+<p>Status: STABLE. Written 2026-08-19 by the co-founder session, from the running rehearsal build. Every prompt below was captured by executing the prompt builder against a real case, not by copying source, so what is printed here is exactly what goes on the wire.</p>
+<p><strong>Why this document exists.</strong> The Thursday deletion carries five documents: <code>UI_LANGUAGE_AND_VISUALS_SPEC.md</code>, <code>SCHEMA_PACK.md</code>, <code>BUILD_SPEC_v1.md</code>, <code>RUNNING_COST_AND_LIMITS.md</code> and <code>CANON.md</code>. A gap audit against the running build on 19 August found that the single most expensive discovery of the whole rehearsal, the six agent prompts and the validator contracts they are judged against, appears in none of them. <code>RUNNING_COST_AND_LIMITS.md</code> records that the prompts were broken and that fixing them took the live path from 481 seconds to five. It does not contain the prompts.</p>
+<p>Rebuilding from the existing pack alone reproduces the bug it took a day to find. This document closes that.</p>
+<h2>0. The one rule that generates most of the others</h2>
+<p><strong>A prompt whose example does not match its validator fails on every live model and passes every offline test.</strong></p>
+<p>The offline path computes each role's answer deterministically and never calls a model, so a broken prompt is invisible to the test suite. Five of the six model-backed roles shipped with a one-line stub that never stated the JSON shape it had to return, and the sixth had an example missing two required keys. All 299 tests passed throughout.</p>
+<p>The mechanical consequence for Friday: <strong>write the validator and the prompt in the same sitting, and paste the validator's own example into the prompt.</strong> If they are written apart, they drift, and nothing catches it until a live run.</p>
+<h2>1. Model routing, and why each role sits where it does</h2>
+<p>Verified live 2026-08-19 on the account recorded in <code>AWS_EVIDENCE.md</code>, region us-east-1. All fifteen Anthropic models on this account are agreement-blocked. Do not plan around them.</p>
+<div class="tw"><table><thead><tr><th>Role</th><th>Model</th><th>Fallback</th><th>Model in the loop</th></tr></thead><tbody><tr><td>orchestrator</td><td>moonshot.kimi-k2-thinking</td><td>zai.glm-5</td><td>No. The plan is deterministic in the shipped build</td></tr><tr><td>triage</td><td>amazon.nova-micro-v1:0</td><td>amazon.nova-lite-v1:0</td><td>Yes</td></tr><tr><td>extractor</td><td>amazon.nova-lite-v1:0</td><td>amazon.nova-micro-v1:0</td><td>Yes</td></tr><tr><td>binder</td><td>none</td><td>none</td><td><strong>No, by design</strong></td></tr><tr><td>validator</td><td>none</td><td>none</td><td><strong>No, by design</strong></td></tr><tr><td>critic</td><td>mistral.mistral-large-3-675b-instruct</td><td>qwen.qwen3-vl-235b-a22b</td><td>Yes</td></tr><tr><td>reconciler</td><td>zai.glm-5</td><td>deepseek.v3.2</td><td>Yes</td></tr><tr><td>narrator</td><td>amazon.nova-lite-v1:0</td><td>amazon.nova-micro-v1:0</td><td>Yes</td></tr><tr><td>learner</td><td>moonshot.kimi-k2-thinking</td><td>zai.glm-5</td><td><strong>No. Forced to the deterministic path</strong></td></tr></tbody></table></div>
+<p>Four of these entries are load bearing and a rebuild that gets them wrong looks identical until it is examined on stage.</p>
+<p><strong>The extractor must not sit on Nova Pro.</strong> It is the highest-volume role and the only one that carries a whole document on every call. Nova Pro measured clean at six concurrent on a twelve-token probe and still throttled at three in the real run, because its binding constraint is tokens per minute, not requests. A throttled extractor returns nothing, which is worse than a weaker model returning something: the deterministic binder checks every quote against the document and drops what it cannot find, so the architecture already catches a poor reader. It cannot catch silence.</p>
+<p><strong>The critic must not share a model family with the extractor.</strong> The old fallback pointed the critic at the same model the extractor used, so any run that fell back had the proposer and its own critic being the same model, quietly voiding the independence the product claims on stage. Enforce it in code, not in review:</p>
+<pre><code>assertCriticIndependence(config):
+    extractorFamily = modelFamily(config.extractor.modelId)
+    criticFamily    = modelFamily(config.critic.modelId)
+    if either is missing, or the two are equal:
+        throw &quot;The critic and extractor must use independent model
+               families before the governed runtime starts.&quot;</code></pre>
+<p><code>modelFamily</code> is the first two dot-separated segments with any dash suffix stripped, so <code>amazon.nova-lite-v1:0</code> and <code>amazon.nova-micro-v1:0</code> are the same family and cannot critique each other. The route selector retries with the fallback and throws if no independent critic exists. It runs before the governed runtime starts, so an independence breach is a startup failure, never a quiet one.</p>
+<p><strong>The binder and the validator contain no model at all.</strong> That is the sentence that survives the pitch: a model cannot verify a model. The binder locates every quote in the source text by exact match and computes the character offsets itself, ignoring any offsets the model claimed. The validator checks arithmetic identities. Both are ordinary code.</p>
+<p><strong>The learner is deterministic on purpose.</strong> It passes <code>forceRecorded: true</code>, so its one-line prompt is never sent anywhere. Do not "fix" it into a model call. The lesson ledger is an accountability record, and a model-written lesson is a model marking its own homework.</p>
+<h2>2. The five live prompts, captured from the running build</h2>
+<p>Captured by executing each prompt builder against <code>CASE-2026-Q1-MER001</code>, so the document text inside them is the real synthetic corpus text a model receives. The figures in it are the CANON section 5 values. <code>USD 24,700,000</code> is undrawn commitment, which is committed capital minus drawn capital on that document, and it is the identity the deterministic validator checks.</p>
+<h3>Prompt: triage</h3>
+<pre><code>You are triaging one synthetic source document for a regulatory return.
+
+Document id: D1
+Document title: Quarterly Administrator Statement
+
+The four reportable fields, by code and label:
+  F1 = Committed capital
+  F2 = Drawn capital
+  F3 = Closing NAV
+  F4 = Complaints closed
+
+Decide which of those fields this document actually carries a figure for.
+Include a field code only if the document names that field and gives a number for it.
+Do not guess, and do not include a field the document is silent about.
+
+Return exactly this JSON object and nothing else:
+  {&quot;docId&quot;: &quot;D1&quot;, &quot;fieldCodes&quot;: [&quot;F1&quot;, &quot;F2&quot;]}
+
+docId must be exactly the document id above. fieldCodes is an array of the codes you chose,
+and it may be empty if the document carries none of them.
+
+The document text follows between the markers.
+--- BEGIN DOCUMENT ---
+Northwind Fund Services (IFSC) Private Limited
+Quarterly Administrator Statement
+Scheme: Meridian Alpha Opportunities Fund I
+Period: Quarter ended 30 June 2026
+As at: 30 June 2026 16:00 IST
+Version: 2 (supersedes Version 1 issued 03 July 2026)
+Issued: 08 July 2026
+==================================================================
+SYNTHETIC TEST DOCUMENT, NOT A REAL RECORD
+
+Committed capital ................. USD 42,500,000
+Drawn capital ..................... USD 17,800,000
+Closing NAV ....................... USD 21,940,500
+Undrawn commitment ................ USD 24,700,000
+Management fee accrued ............ USD 212,000
+Distributions to date ............. USD 0
+Number of investors ............... 3
+
+Prepared by the administrator. Figures are stated as at the time above.
+
+--- END DOCUMENT ---</code></pre>
+<h3>Prompt: extractor</h3>
+<pre><code>You are extracting one field from a source document for a regulatory audit tool.
+Field label: Committed capital
+Field code: F1
+Document id: D1
+Expected unit: USD
+
+Find every candidate value for this field stated in the document text below.
+For each candidate, report the value and the EXACT substring from the document
+that states it, copied character for character (same spacing, punctuation and
+currency symbols as written). Do not paraphrase the quote. Do not report
+character offsets; they will be computed independently from your quote.
+A quote that cannot be found in the document is discarded, so copy it exactly.
+
+value must be a plain number with no currency symbol, no commas and no spaces.
+Write 17800000, never &quot;USD 17,800,000&quot; and never 17,800,000.
+
+Reply with strict JSON only, no prose outside the JSON. All four keys are
+required every time, including the empty dropped array:
+{&quot;fieldCode&quot;: &quot;F1&quot;, &quot;docId&quot;: &quot;D1&quot;, &quot;candidates&quot;: [{&quot;value&quot;: 17800000, &quot;quote&quot;: &quot;Drawn capital ..................... USD 17,800,000&quot;}], &quot;dropped&quot;: []}
+
+If the document does not state this field at all, reply with the same four
+keys and an empty candidates array:
+{&quot;fieldCode&quot;: &quot;F1&quot;, &quot;docId&quot;: &quot;D1&quot;, &quot;candidates&quot;: [], &quot;dropped&quot;: []}
+
+Document text:
+&quot;&quot;&quot;
+Northwind Fund Services (IFSC) Private Limited
+Quarterly Administrator Statement
+Scheme: Meridian Alpha Opportunities Fund I
+Period: Quarter ended 30 June 2026
+As at: 30 June 2026 16:00 IST
+Version: 2 (supersedes Version 1 issued 03 July 2026)
+Issued: 08 July 2026
+==================================================================
+SYNTHETIC TEST DOCUMENT, NOT A REAL RECORD
+
+Committed capital ................. USD 42,500,000
+Drawn capital ..................... USD 17,800,000
+Closing NAV ....................... USD 21,940,500
+Undrawn commitment ................ USD 24,700,000
+Management fee accrued ............ USD 212,000
+Distributions to date ............. USD 0
+Number of investors ............... 3
+
+Prepared by the administrator. Figures are stated as at the time above.
+
+&quot;&quot;&quot;</code></pre>
+<h3>Prompt: critic</h3>
+<pre><code>You are the independent critic. Another model read a value out of a synthetic document.
+Your job is to try to knock that reading down, not to agree with it.
+
+Field code: F1
+Field label: Committed capital
+Document id: D1
+
+The readings you are objecting to:
+  1. value 17800000, quoted as &quot;Drawn capital ..................... USD 17,800,000&quot;
+
+Check the document text below. Raise an objection when the quoted words are not actually there,
+when the number does not match the words, when the line is about a different field, or when the
+figure belongs to a different period. Raise nothing if the reading is sound. An empty objections
+array is a valid and common answer, and inventing an objection is worse than raising none.
+
+Return exactly this JSON object and nothing else, with no other keys:
+  {&quot;fieldCode&quot;: &quot;F1&quot;, &quot;docId&quot;: &quot;D1&quot;,
+   &quot;objections&quot;: [], &quot;criticismStatus&quot;: &quot;CRITICISED&quot;}
+
+criticismStatus is always the exact string &quot;CRITICISED&quot;. It records that criticism ran,
+not that you found something. Send it even when objections is empty.
+
+Each objection, if you raise any, is an object with exactly the keys fieldCode, docId, objection, reading.
+
+--- BEGIN DOCUMENT ---
+Northwind Fund Services (IFSC) Private Limited
+Quarterly Administrator Statement
+Scheme: Meridian Alpha Opportunities Fund I
+Period: Quarter ended 30 June 2026
+As at: 30 June 2026 16:00 IST
+Version: 2 (supersedes Version 1 issued 03 July 2026)
+Issued: 08 July 2026
+==================================================================
+SYNTHETIC TEST DOCUMENT, NOT A REAL RECORD
+
+Committed capital ................. USD 42,500,000
+Drawn capital ..................... USD 17,800,000
+Closing NAV ....................... USD 21,940,500
+Undrawn commitment ................ USD 24,700,000
+Management fee accrued ............ USD 212,000
+Distributions to date ............. USD 0
+Number of investors ............... 3
+
+Prepared by the administrator. Figures are stated as at the time above.
+
+--- END DOCUMENT ---</code></pre>
+<h3>Prompt: reconciler</h3>
+<pre><code>You are reconciling one field of a synthetic regulatory return.
+
+Field code: F1
+Field label: Committed capital
+
+The candidate readings found in the source documents:
+  1. value 17800000 from document D1, true as at 2026-03-31T17:42:00+05:30, quoted as &quot;Drawn capital ..................... USD 17,800,000&quot;
+
+THE RULE THAT OVERRIDES EVERYTHING ELSE. You may not choose between these values.
+You do not resolve the disagreement. You describe it, and a named human decides later.
+selectedValue must always be null. There is no exception.
+
+Choose a state:
+  &quot;SUPPORTED&quot;   exactly one distinct value was found.
+  &quot;CONFLICTED&quot;  two or more distinct values were found.
+  &quot;UNSUPPORTED&quot; no candidate was found at all.
+
+If CONFLICTED, give a conflict object with a cause and a one sentence plain English explanation.
+Cause is one of: TIMING, CORRECTION, VERSION, ARITHMETIC, UNIT_MISMATCH, DUPLICATE, OUT_OF_PERIOD, MODEL_DISAGREEMENT.
+Use MODEL_DISAGREEMENT when two models read the same document differently. That takes priority.
+If not CONFLICTED, set conflict to null and give a one sentence explanation string instead.
+
+Return exactly this JSON object and nothing else, with no other keys:
+  {&quot;fieldCode&quot;: &quot;F1&quot;, &quot;state&quot;: &quot;CONFLICTED&quot;, &quot;selectedValue&quot;: null,
+   &quot;conflict&quot;: {&quot;cause&quot;: &quot;TIMING&quot;, &quot;explanation&quot;: &quot;...&quot;}, &quot;explanation&quot;: &quot;...&quot;}</code></pre>
+<h3>Prompt: narrator</h3>
+<pre><code>You are writing a two sentence summary of a synthetic regulatory case for a named human reviewer.
+
+Entity: Meridian Alpha Capital IFSC Private Limited
+Reportable fields on this case: 4
+
+Hard rules, and a summary breaking any of them is discarded:
+  Use the word &quot;synthetic&quot; explicitly. The data is fictional and the summary must say so.
+  Never imply the return has been filed, approved, resolved, or acted on autonomously.
+  Never use the words file, filed, files, filing, approved, approval, autonomous, resolved, or resolution.
+  The software prepares and escalates. A named human decides. Say it that way.
+
+Return exactly this JSON object and nothing else:
+  {&quot;summary&quot;: &quot;...&quot;, &quot;synthetic&quot;: true, &quot;nextAction&quot;: &quot;...&quot;}
+
+summary describes the state of the synthetic case. nextAction says what the named human does next.
+No other keys are permitted.</code></pre>
+<h2>3. The validator contracts, which are the real rules</h2>
+<p>The prompt asks. The validator decides. A role whose output fails its validator is retried and then escalated, so these are the actual product rules and the prompts above are only their polite form. Rebuild the validators first.</p>
+<h3>Critic</h3>
+<p>Allowed keys, and nothing else: <code>fieldCode</code>, <code>docId</code>, <code>objections</code>, <code>criticismStatus</code>. Each objection allows only <code>fieldCode</code>, <code>docId</code>, <code>objection</code>, <code>reading</code>. <code>criticismStatus</code> must be the exact string <code>CRITICISED</code>, always, even when the objections array is empty, because it records that criticism ran rather than that something was found.</p>
+<p>The critic is then swept for any key in <code>{value, chosenDocId, decidedBy, attestedBy, signedBy, decision, attestation, signoff, selectedValue, human, humanDecision}</code>, any <code>state</code> in <code>{DECIDED, ATTESTED, CONFIRMED, CONFIRMED_UNSOURCED, SIGNED, SEALED}</code>, and any <code>resolved: true</code>, recursively at every depth. A critic that resolves anything is rejected. <strong>The critic may attack a reading. It may never settle one.</strong></p>
+<h3>Reconciler, the most constrained role in the system</h3>
+<p>Allowed keys: <code>fieldCode</code>, <code>state</code>, <code>selectedValue</code>, <code>conflict</code>, <code>explanation</code>. <code>selectedValue</code> must be <code>null</code>. There is no exception and no override. <code>state</code> must be one of <code>SUPPORTED</code>, <code>UNSUPPORTED</code>, <code>CONFLICTED</code>.</p>
+<p>Then the rule that is the whole product, and the one to write first on Friday:</p>
+<blockquote>If two models returned different readings for the same field, the output must be <code>CONFLICTED</code> with cause <code>MODEL_DISAGREEMENT</code>, and the explanation must name <strong>both</strong> model ids and <strong>both</strong> readings, formatted with thousands separators.</blockquote>
+<p>The validator reconstructs the reading set from the candidates and the objections itself and compares. A reconciler that quietly harmonises two models into one answer is rejected by code that does not read its explanation. This is the single most important guard in the build and the one a juror should be shown failing on purpose.</p>
+<h3>Narrator</h3>
+<p>Allowed keys: <code>summary</code>, <code>synthetic</code>, <code>nextAction</code>. <code>synthetic</code> must be <code>true</code>, and the combined text must contain the word "synthetic".</p>
+<p>Every string at every depth is then tested against <code>/\bfile(?:d|s)?\b|\bfiling\b|\bapproved\b|\bapproval\b|\bautonomous\b|\bresolved\b|\bresolution\b/i</code> and rejected on a match. The software prepares and escalates; a named human decides. A summary that says the return was filed is discarded even if it is otherwise perfect.</p>
+<h3>Extractor</h3>
+<p>Requires <code>fieldCode</code>, <code>docId</code>, <code>candidates</code>, <code>dropped</code>. All four keys every time, including the empty <code>dropped</code> array. This is the one whose original example omitted two of its own required keys, so a model that followed the instruction exactly was rejected on every attempt.</p>
+<h3>Triage, plus the floor that overrides it</h3>
+<p>Requires <code>{docId, fieldCodes}</code> where <code>fieldCodes</code> may be empty.</p>
+<p>Then the rule that matters more than the model's answer:</p>
+<blockquote><strong>Triage may narrow the work. It may never lose evidence.</strong></blockquote>
+<p>Plain string matching runs across the document for every field label independently of the model. Anything it finds is added back to whatever triage returned. The model can only narrow work that deterministic code agrees is absent. When the floor overrules the model, the run says so in words on screen:</p>
+<blockquote>Deterministic check restored F3 on D1. The document names those fields and the triage model omitted them. Triage may narrow the work, never lose evidence.</blockquote>
+<p>This was not a theoretical guard. With a working prompt, triage read the administrator statement and returned F1 and F2, silently dropping F3, although the document plainly contains <code>Closing NAV ....................... USD 21,940,500</code>. A pruning step that can quietly drop a field is the exact failure this product exists to prevent, and it is worse than an extraction error, because there is no candidate to check and no disagreement to preserve, so nothing downstream can detect it. On the demo case the floor fires twice, restoring F3 on D1 and F1 on D4.</p>
+<p><strong>The correction has to be visible.</strong> A correction nobody can see is indistinguishable from the model having been right.</p>
+<h3>Binder and validator, no model</h3>
+<p>The binder ignores any character offsets the model claims and locates each quote in the source text itself, dropping any candidate whose quote is not found character for character. The validator checks the accounting identity (undrawn commitment equals committed capital minus drawn capital, per document) and flags <code>EVIDENCE_UNBOUND</code> when a stored quote no longer matches its coordinates in the source. Both are ordinary code and there is no prompt to carry.</p>
+<h2>4. Transport constants, measured on this account</h2>
+<p>Do not copy a quota from a documentation page. It describes somebody else's allowance. <code>scripts/rate-probe.js</code> fires N calls at once per model and steps N up until throttling starts.</p>
+<p>Measured 2026-08-19, us-east-1, on the account recorded in <code>AWS_EVIDENCE.md</code>:</p>
+<div class="tw"><table><thead><tr><th>Model</th><th>Clean at</th><th>Gate set to</th><th>Why the gate is lower</th></tr></thead><tbody><tr><td>amazon.nova-micro-v1:0</td><td>12 concurrent</td><td>8</td><td>Headroom for a busier account on the day</td></tr><tr><td>amazon.nova-lite-v1:0</td><td>12 concurrent</td><td>8</td><td>Same</td></tr><tr><td>amazon.nova-pro-v1:0</td><td>6 concurrent, 7 of 8 throttled at 8</td><td><strong>3</strong></td><td>The probe used a twelve-token prompt. The real constraint is tokens per minute, not requests, so a request-rate probe flattered it</td></tr></tbody></table></div>
+<pre><code>default in-flight per unmeasured model : 4
+throttle retries                       : 4
+throttle base                          : 300 ms, doubling, each interval
+                                         plus up to half of itself as jitter
+throttle total cap                     : 4000 ms across all retries, per call</code></pre>
+<p>Four rules, and each one was learned by getting it wrong first.</p>
+<ol><li><strong>The gate is per model, never global.</strong> One shared gate throttles the</li></ol>
+<p>   constrained model and starves the ones with headroom at the same time.</p>
+<ol><li><strong>Backoff carries jitter.</strong> Without it, parallel callers back off in lockstep</li></ol>
+<p>   and collide again on the next wave. Add up to half of each interval.</p>
+<ol><li><strong>Total backoff is capped, and the cap is small.</strong> The first attempt used a</li></ol>
+<p>   400ms base doubled five times, so a throttled call slept through twelve    seconds of ladder while holding one of only four slots. Three stuck calls    starved twenty four others until the wall-clock budget killed the run. Inside    a bounded budget a throttled call has to fail fast and free its slot.    <strong>Backing off politely past the deadline is a slower way to fail that takes    the rest of the run down with it.</strong></p>
+<ol><li><strong>Both the gate and the sleep respect the AbortSignal</strong>, or the wall-clock</li></ol>
+<p>   budget stops bounding anything.</p>
+<h3>The wall-clock budget, and it does enforce</h3>
+<p><code>src/orchestrator.js</code> sets one deadline for the whole run at <code>Date.now() + plan.budget.wallClockMs</code>, default 30000, hard ceiling 60000. Every step races the remaining time against an <code>AbortController</code>. A step that starts past the deadline, or is still running at it, returns a <code>TIMEOUT</code> run and the case escalates to a named human.</p>
+<p>Verified by running it: a permanently hanging agent against a 30 millisecond budget escalates in 36 milliseconds instead of hanging.</p>
+<p>An earlier brief said this did not enforce and that was stale. <strong>Do not volunteer it as a weakness.</strong> Eight of a hundred review perspectives independently marked us down for a missing safety control we actually have.</p>
+<p>Plan budget bounds: <code>maxRetriesPerStep</code> 0 to 2, <code>maxReplans</code> 0 to 1, <code>wallClockMs</code> positive and at most 60000. A plan outside those bounds is rejected before the run starts.</p>
+<h2>5. The offline path, stated exactly</h2>
+<p>The provider picks LIVE only when all four of <code>BEDROCK_MODEL_ID</code>, <code>AWS_REGION</code>, <code>AWS_ACCESS_KEY_ID</code> and <code>AWS_SECRET_ACCESS_KEY</code> are present. Otherwise it runs <code>ReplayProvider</code>, and the mode is printed on startup either way.</p>
+<p><code>ReplayProvider</code> hashes the prompt, looks for a fixture with that exact hash <strong>and <code>mode: 'LIVE'</code></strong>, and takes the last match because the fixture file is append only. If there is no match it falls through to <code>deterministicScan</code>, which is pure string matching over the document.</p>
+<p>Two consequences, and both must be said out loud rather than discovered:</p>
+<ul><li><strong>Only a genuine live recording is a usable fixture.</strong> A previous RECORDED</li></ul>
+<p>  entry is the deterministic scan's own log line, not a model response, and   replaying it parses to zero candidates in silence.</p>
+<ul><li><strong>Changing a prompt invalidates every fixture keyed to it.</strong> The corpus</li></ul>
+<p>  generator writes document prose with a model, so regenerating the corpus   changes the document text, which changes the prompt, which changes the hash,   which silently moves extraction from fixture replay to deterministic scan. The   demo still works, which is exactly why nobody notices.</p>
+<p><strong>Say this, and do not overstate it:</strong> the provider interface for a local open-weight model exists. The wiring does not. The offline path is recorded responses plus a deterministic scan, and it is not a local model.</p>
+<h2>6. What the corpus generator owns</h2>
+<p><code>scripts/generate-scenarios.js</code> builds 24 cases across 20 fictional entities and 10 pain archetypes. The split of responsibility is the part to preserve:</p>
+<ul><li>**Deterministic code owns every number, every planted conflict and every</li></ul>
+<p>  content hash.** Nothing a model writes can change a figure.</p>
+<ul><li><strong>A model writes only the surrounding prose</strong>, so the documents read like</li></ul>
+<p>  documents rather than like a fixture file. Measured on the last build: 104   calls to <code>amazon.nova-lite-v1:0</code>, none fell back.</p>
+<p>Every case therefore carries its own ground truth, written before any model saw it:</p>
+<pre><code>&quot;scenario&quot;: {
+  &quot;id&quot;: &quot;S2&quot;,
+  &quot;name&quot;: &quot;Silent restatement&quot;,
+  &quot;expectedField&quot;: &quot;F3&quot;,
+  &quot;expectedCause&quot;: &quot;CORRECTION&quot;,
+  &quot;pain&quot;: &quot;The administrator reissued a corrected valuation after the internal ledger had already been built from the earlier version.&quot;
+}</code></pre>
+<p><strong>Keep that block.</strong> It is the only non-circular label set in the build, and it is what makes the measured result in <code>MEASURED_RESULTS.md</code> an honest number rather than the system grading its own homework.</p>
+<p>Duplicate detection needs one thing to survive the rebuild: every document carries a real <code>contentHash</code>, and the collapse only trusts a hash-shaped value, so a fixture or placeholder is never mistaken for content identity. Two candidates whose documents share a hash are collapsed to one and reported under a <strong>separate <code>duplicate</code> key, not as a conflict</strong>, because three candidates agreeing is not a disagreement. The field stays <code>SUPPORTED</code> and says why it was counted once instead of twice.</p>
+<h2>7. The eval trap, which cost nothing to build and would have cost the pitch</h2>
+<p><code>data/eval-results.json</code> in the rehearsal build reports coverage 11.9 percent, abstention correctness 50 percent and field recall 0 percent, on a build that passes 24 of 24 canon checks and 299 of 299 tests.</p>
+<p>The product is not wrong. <strong>The label file is.</strong> Three separate faults:</p>
+<ol><li>59 of 67 labels reference cases that were never built</li></ol>
+<p>   (a <code>CASE-2026-Q4-MER001</code> that was never generated, plus seven <code>CASE-EVAL-*</code> placeholders).</p>
+<ol><li>Four labels mark F1 on the demo case as <code>shouldAbstain: false</code> with a true</li></ol>
+<p>   value of 42,500,000. CANON section 4 says F1 is a <strong>version conflict</strong>. The    product correctly abstains and is scored as a miss, four times.</p>
+<ol><li>Two labels mark F3 as the missing field. CANON says F3 is a correction</li></ol>
+<p>   conflict and <strong>F4</strong> is the field with no source. F3 and F4 are transposed.</p>
+<p>The labels predate the final demo-case design and were never re-derived. Nothing caught it because nothing checked the labels against CANON.</p>
+<p><strong>The rule for Friday, and it is five lines of code:</strong> the eval gate fails if any label names a case absent from the corpus, or asserts a state that CANON contradicts. Labels are derived from CANON and from <code>scenario.expectedCause</code>, never hand-written. A repository whose own eval file says the product fails half the time is a self-inflicted wound, and a judge who opens <code>data/</code> finds it before we do.</p>
+<h2>8. Rebuild order for Friday</h2>
+<p>The lane order that avoids every trap above.</p>
+<div class="tw"><table><thead><tr><th>#</th><th>Build</th><th>Why here</th></tr></thead><tbody><tr><td>1</td><td>Field states, conflict causes, the label map with a sentence-casing fallback</td><td>Every display map must cover everything the corpus can produce. Two of the six rehearsal defects were a map falling short and printing its own key</td></tr><tr><td>2</td><td>The five validators in section 3</td><td>They are the rules. Everything else serves them</td></tr><tr><td>3</td><td>The five prompts in section 2, <strong>in the same sitting</strong>, pasting each validator's own example into its prompt</td><td>Written apart, they drift, and no offline test catches it</td></tr><tr><td>4</td><td>Binder and validator, deterministic, no model</td><td>A model cannot verify a model, and this is the sentence the pitch rests on</td></tr><tr><td>5</td><td>The triage floor</td><td>Before triage is allowed to narrow anything</td></tr><tr><td>6</td><td>Corpus generator, deterministic numbers, model prose, <code>scenario</code> block preserved</td><td>Ground truth must exist before anything is measured</td></tr><tr><td>7</td><td>Per-model gate, jittered backoff, capped total, AbortSignal respected</td><td>Only needed once calls go live, and painful to retrofit</td></tr><tr><td>8</td><td><code>assertCriticIndependence</code> at startup</td><td>A startup failure, never a quiet one</td></tr><tr><td>9</td><td>Eval labels derived from CANON, with the two consistency checks</td><td>So the repo cannot ship a number that libels the product</td></tr></tbody></table></div>
+<p><strong>Then the sweep that is worth more than more tests.</strong> Every entity, every screen, asserting two things: no raw enum reaches the screen, and no screen renders empty where it should render content. That sweep found three of the six rehearsal defects in under a minute, and 299 passing tests found none of them, because the tests assert on source text and engine behaviour and none of them ever opened the product and clicked the thing a juror clicks first.</p>
+<a class="backlink" href="../index.html">&larr; back to the submission hub</a>
+<footer>Kriseva AI Private Limited &middot; GIFT IFIH Young Builders' Program 2026 &middot; all data synthetic</footer>
+</div>
