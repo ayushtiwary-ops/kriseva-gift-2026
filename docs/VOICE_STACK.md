@@ -2,7 +2,7 @@
 
 Status: STABLE. Written 2026-08-20. Star counts read from the GitHub API on the day.
 
-**Decision: Kokoro-82M, running locally on the founder's Mac. No API, no credits,
+**Decision: Kokoro-82M, voice `bm_lewis`, running locally on the founder's Mac. No API, no credits,
 no per-character cost.** ElevenLabs is kept as a one-variable swap if a key
 appears, and macOS `say` remains as a floor that always works.
 
@@ -82,12 +82,17 @@ line.
 
 ```bash
 cd <video dir>
-KOKORO_VOICE=bm_george KOKORO_SPEED=1.24 python3 render.py && bash build2.sh
+KOKORO_VOICE=bm_lewis KOKORO_SPEED=1.24 python3 render.py && bash build2.sh
 ```
 
-`KOKORO_VOICE` accepts any Kokoro voice. `KOKORO_SPEED` sets the pace; 1.24 puts
-the current script at 156 words per minute and the finished film at 1:56, inside
-the two minute limit.
+`KOKORO_VOICE` accepts any Kokoro voice; the film uses `bm_lewis`, chosen by the
+founder from the comparison page. `KOKORO_SPEED` sets the pace; 1.24 puts the
+current script at 156 words per minute and the finished film at 1:56, inside the
+two minute limit.
+
+The build ends with an EBU R128 loudness pass at -16 LUFS. Kokoro voices differ
+in level by up to a third between them, so without it a quieter voice does not
+carry in a room.
 
 ---
 
