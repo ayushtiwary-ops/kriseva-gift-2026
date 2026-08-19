@@ -1,0 +1,30 @@
+<title>Backup runbook</title>
+<link rel="stylesheet" href="../styles/hub.css">
+<div class="strip">KRISEVA ATTEST &middot; synthetic data only &middot; research stage &middot; no customer or entity data</div>
+<div class="wrap"><h1>BACKUP RUNBOOK: what to open when something fails</h1>
+<p>One page. Keep it on your phone. Every link below works with no laptop, no server, no local build and no network beyond the venue wifi.</p>
+<h2>The links, in the order you would reach for them</h2>
+<div class="tw"><table><thead><tr><th>#</th><th>If this fails</th><th>Open this</th></tr></thead><tbody><tr><td>1</td><td>Nothing has failed. Normal demo</td><td>Your laptop, <code>http://localhost:4000</code></td></tr><tr><td>2</td><td>Laptop, port, server, or the local build</td><td><strong><code>https://kriseva-gift-backup-2026.s3.us-east-1.amazonaws.com/prototype/index.html</code></strong></td></tr><tr><td>3</td><td>You need the whole submission, not just the product</td><td><code>https://kriseva-gift-backup-2026.s3.us-east-1.amazonaws.com/index.html</code></td></tr><tr><td>4</td><td>AWS itself is unreachable</td><td><code>https://ayushtiwary-ops.github.io/kriseva-gift-2026/</code></td></tr><tr><td>5</td><td>All networks are down</td><td>The video, offline on your phone, and the deck as a PDF</td></tr></tbody></table></div>
+<p><strong>Say it plainly when you switch.</strong> "The laptop is not cooperating, so I am opening the deployed build. Same product, same numbers, all synthetic." A calm switch reads as preparation. An apology reads as a failure.</p>
+<h2>What the backup prototype is, exactly</h2>
+<p>It is the real product with the real application code, embedded unmodified. Only the network layer is replaced by responses captured from the running server by driving it. Nothing is reimplemented to make the demo work. Every screen says <strong>recorded walkthrough</strong> across the top, so nobody can say you implied it was live.</p>
+<p><strong>All 26 cases are in it.</strong> The entity switcher works. Every screen works. Verified across 182 screens on the deployed build.</p>
+<p><strong>The write actions follow the walkthrough order.</strong> Decide, then attest, then sign off, then tamper. Click them in that order and you get the real sequence. Click out of order and it says so plainly rather than pretending.</p>
+<h2>The one thing that can go wrong with the backup</h2>
+<p><strong>A stale browser cache.</strong> If you loaded the link earlier in the week, the browser may serve that older copy.</p>
+<p>Fix, in order:</p>
+<ol><li>Add <code>?v=</code> and today's date to the end of the link.</li><li>Hard reload: <strong>Cmd + Shift + R</strong>.</li><li>Open it in a private window.</li></ol>
+<p><strong>Before you travel, open the link in the browser you will use on stage, confirm it loads, then leave that tab open.</strong> A tab that is already open cannot fail to load.</p>
+<h2>If a juror asks to see it themselves</h2>
+<p>Give them the hub link, not the prototype link. The hub explains what they are looking at before they click into it, and it carries the data statement, so a screenshot of the product can never be mistaken for a real record.</p>
+<p><code>https://kriseva-gift-backup-2026.s3.us-east-1.amazonaws.com/index.html</code></p>
+<h2>Redeploying during or after the sprint</h2>
+<p>From the hub repository:</p>
+<pre><code>bash scripts/deploy.sh --prototype ~/path/to/attest</code></pre>
+<p>It rebuilds the document pages, uploads the hub, builds and uploads the prototype, and then checks six URLs and prints <code>DEPLOYED</code> or <code>NOT DEPLOYED</code>. It writes the prototype to a <strong>timestamped path as well as the stable one</strong>, so on stage you can use a link that no cache has ever seen.</p>
+<p>Requires the <code>kriseva</code> AWS profile. Costs a few cents of S3 storage and nothing else.</p>
+<h2>What is where</h2>
+<div class="tw"><table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td>Public hub repository</td><td><code>github.com/ayushtiwary-ops/kriseva-gift-2026</code></td></tr><tr><td>Private rehearsal source</td><td><code>github.com/ayushtiwary-ops/kriseva-attest-rehearsal</code>, <strong>public after 14:00 Friday</strong></td></tr><tr><td>Everything deployed</td><td>S3 bucket <code>kriseva-gift-backup-2026</code>, our own AWS account</td></tr></tbody></table></div>
+<a class="backlink" href="../index.html">&larr; back to the submission hub</a>
+<footer>Kriseva AI Private Limited &middot; GIFT IFIH Young Builders' Program 2026 &middot; all data synthetic</footer>
+</div>
