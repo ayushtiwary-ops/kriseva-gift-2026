@@ -1,0 +1,42 @@
+<title>The voice stack</title>
+<link rel="stylesheet" href="../styles/hub.css">
+<div class="strip">KRISEVA ATTEST &middot; synthetic data only &middot; research stage &middot; no customer or entity data</div>
+<div class="wrap"><h1>THE VOICE STACK: what we use, what we rejected, and why</h1>
+<p>Status: STABLE. Written 2026-08-20. Star counts read from the GitHub API on the day.</p>
+<p><strong>Decision: Kokoro-82M, running locally on the founder's Mac. No API, no credits, no per-character cost.</strong> ElevenLabs is kept as a one-variable swap if a key appears, and macOS <code>say</code> remains as a floor that always works.</p>
+<h2>1. The candidates, with real numbers</h2>
+<div class="tw"><table><thead><tr><th>Repository</th><th>Stars</th><th>Licence</th><th>Last push</th><th>Verdict</th></tr></thead><tbody><tr><td>microsoft/VibeVoice</td><td>52,929</td><td>MIT</td><td>2026-07-24</td><td>Most starred. Built for long-form multi-speaker dialogue. Overkill for a single narrator reading 290 words</td></tr><tr><td>coqui-ai/TTS</td><td>45,918</td><td>MPL-2.0</td><td><strong>2024-08-16</strong></td><td><strong>Rejected.</strong> Unmaintained since the company wound down, and the XTTS-v2 weights are non-commercial</td></tr><tr><td>suno-ai/bark</td><td>39,238</td><td>MIT</td><td><strong>2024-08-19</strong></td><td><strong>Rejected.</strong> Stale, slow, and unreliable prosody on numbers</td></tr><tr><td>myshell-ai/OpenVoice</td><td>37,159</td><td>MIT</td><td>2025-04-19</td><td>Voice cloning rather than narration. Not what we need</td></tr><tr><td>fishaudio/fish-speech</td><td>32,273</td><td>no SPDX licence declared</td><td>2026-08-03</td><td>Strong, but an undeclared licence is a bad fit for a company submission</td></tr><tr><td>resemble-ai/chatterbox</td><td>26,066</td><td><strong>MIT</strong></td><td>2026-07-21</td><td><strong>The serious runner-up.</strong> See below</td></tr><tr><td>index-tts/index-tts</td><td>23,211</td><td>no SPDX licence declared</td><td>2026-08-18</td><td>Very active, same licence caution</td></tr><tr><td>nari-labs/dia</td><td>19,369</td><td>Apache-2.0</td><td>2025-11-19</td><td>Dialogue-focused</td></tr><tr><td>SWivid/F5-TTS</td><td>15,136</td><td>MIT repo</td><td>2026-07-23</td><td><strong>Careful:</strong> the repo is MIT but the released weights are CC-BY-NC. Non-commercial</td></tr><tr><td>rhasspy/piper</td><td>11,280</td><td>MIT</td><td>2025-08-26</td><td><strong>Archived.</strong> Fast but the quality gap is audible</td></tr><tr><td><strong>hexgrad/kokoro</strong></td><td><strong>8,479</strong></td><td><strong>Apache-2.0</strong></td><td>2025-08-06</td><td><strong>Chosen.</strong> See below</td></tr><tr><td>boson-ai/higgs-audio</td><td>8,320</td><td>Apache-2.0</td><td>2026-06-05</td><td>Capable, much heavier for no gain here</td></tr><tr><td>canopyai/Orpheus-TTS</td><td>6,298</td><td>Apache-2.0</td><td>2025-12-05</td><td>Good, needs more setup</td></tr></tbody></table></div>
+<p><strong>Most stars is not the same as best for the job.</strong> Two of the top three are effectively unmaintained, and three otherwise strong options carry licences that are wrong for a company pitch.</p>
+<h2>2. Why Kokoro, on 8,479 stars rather than 52,929</h2>
+<p>Four reasons, in the order they mattered.</p>
+<ol><li><strong>Apache 2.0 on the code and the weights.</strong> No non-commercial clause to</li></ol>
+<p>   explain to anybody. Several higher-starred options fail this alone.</p>
+<ol><li><strong>It is 82 million parameters.</strong> Measured on the founder's M5: a 12 second</li></ol>
+<p>   clip generates in about 2 seconds, roughly six times faster than real time,    on CPU, with no GPU and no network.</p>
+<ol><li><strong>Fixed named voices, which is what narration actually needs.</strong> The video is</li></ol>
+<p>   29 separate clips. A cloning model re-infers the voice each time and can drift    in timbre between clips. Kokoro's voices are deterministic, so clip 1 and clip    29 match.</p>
+<ol><li><strong>It is free and unmetered.</strong> Retaking the script twenty times costs nothing,</li></ol>
+<p>   which matters more than the last five percent of quality when the script is    still moving.</p>
+<p><strong>Chatterbox is the better model and we still did not pick it.</strong> It is MIT, actively maintained, and Resemble's own blind study reports 65.3 percent of listeners preferring it over ElevenLabs. It is the right choice the moment we want a <em>specific</em> cloned voice, and it is the first thing to try if the founder does not like any Kokoro voice. For reading a fixed script in a consistent register it buys us little and costs setup time we do not have.</p>
+<h2>3. How it is wired</h2>
+<p><code>tts.py</code> picks an engine in this order, and every engine returns the measured duration of the clip it produced:</p>
+<pre><code>TTS_ENGINE set explicitly?          use that
+ELEVENLABS_API_KEY starts with sk_? elevenlabs
+~/kriseva-tts exists?               kokoro
+otherwise                           macOS say</code></pre>
+<p>Because captions are timed from the <strong>measured duration of each clip</strong>, changing engine re-times every caption automatically. Sync cannot drift, whichever engine is used.</p>
+<p>Kokoro runs in its own interpreter at <code>~/kriseva-tts</code> and is held open as a worker process, so the model loads once for all 29 lines instead of once per line.</p>
+<h3>Rebuilding the video</h3>
+<pre><code>cd &lt;video dir&gt;
+KOKORO_VOICE=bm_george KOKORO_SPEED=1.24 python3 render.py &amp;&amp; bash build2.sh</code></pre>
+<p><code>KOKORO_VOICE</code> accepts any Kokoro voice. <code>KOKORO_SPEED</code> sets the pace; 1.24 puts the current script at 156 words per minute and the finished film at 1:56, inside the two minute limit.</p>
+<h2>4. Two install traps, recorded so they are not hit twice</h2>
+<ol><li><strong>macOS blocks native extensions loaded from <code>/private/tmp</code>.</strong> A virtualenv</li></ol>
+<p>   there fails with <em>"library load disallowed by system policy"</em> on <code>_cffi_backend</code>.    Install under the home directory.</p>
+<ol><li><strong>A uv-managed interpreter hit the same signature check.</strong> Building the venv</li></ol>
+<p>   from the existing pyenv Python with <code>--system-site-packages</code> worked first time.</p>
+<h2>5. What we are not claiming</h2>
+<p>The voice is synthesised and we say so on the video page. We are not claiming a human recorded it, and we are not claiming Kokoro matches ElevenLabs. It is markedly better than the macOS voice it replaces, it is free, and it runs offline on a laptop at a venue with no network.</p>
+<a class="backlink" href="../index.html">&larr; back to the submission hub</a>
+<footer>Kriseva AI Private Limited &middot; GIFT IFIH Young Builders' Program 2026 &middot; all data synthetic</footer>
+</div>
